@@ -92,19 +92,6 @@ const Hero = ({ scrollToProducts }) => {
             >
               Start Shopping <ArrowRight size={20} />
             </button>
-            <button style={{ 
-              background: 'rgba(255,255,255,0.05)', 
-              border: '1px solid rgba(255,255,255,0.1)', 
-              padding: '1rem 2.5rem', 
-              fontSize: '1.1rem',
-              color: 'white',
-              borderRadius: '12px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              backdropFilter: 'blur(10px)'
-            }}>
-              View Categories
-            </button>
           </div>
           
           <div style={{ marginTop: '3rem', display: 'flex', gap: '2rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
@@ -135,7 +122,7 @@ const Hero = ({ scrollToProducts }) => {
                 zIndex: -1
             }} />
             <img 
-                src="https://images.unsplash.com/photo-1622952865768-36c469f44ba6?auto=format&fit=crop&q=80&w=800"
+                src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800"
                 alt="Tech Product" 
                 style={{ 
                     width: '100%', 

@@ -14,6 +14,8 @@ import CartPage from './pages/CartPage';
 import WishlistPage from './pages/WishlistPage';
 import AdminPage from './pages/AdminPage';
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -56,7 +58,11 @@ function App() {
                   <Route path="/register" element={<RegisterPage />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
-                  <Route path="/admin" element={<AdminPage />} />
+                  <Route path="/admin" element={
+                    <ProtectedRoute>
+                      <AdminPage />
+                    </ProtectedRoute>
+                  } />
                 </Routes>
               </main>
 
@@ -67,7 +73,7 @@ function App() {
                 borderTop: '1px solid var(--border-color)',
                 marginTop: 'auto'
               }}>
-                <p>&copy; 2024 Zamazon. All rights reserved.</p>
+                <p>&copy; 2025 Zamazon. All rights reserved.</p>
               </footer>
             </div>
           </ThemeProvider>
