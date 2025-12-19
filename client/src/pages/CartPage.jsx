@@ -1,9 +1,9 @@
-import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { formatCurrency } from '../utils/helpers';
+import { useNavigate } from 'react-router-dom';
+import { Trash2 } from 'lucide-react';
+import { formatCurrency } from '../utils/currency';
 
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
@@ -29,12 +29,11 @@ const CartPage = () => {
 
   const handleCheckout = async () => {
     if (!user) {
-      alert("Please login to checkout");
       navigate('/login');
       return;
     }
     if (!shipping.address || !shipping.phone) {
-        alert("Please fill in all shipping fields correctly.");
+        alert("Please fill in your shipping details.");
         return;
     }
 

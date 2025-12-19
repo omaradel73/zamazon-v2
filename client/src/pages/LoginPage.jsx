@@ -21,11 +21,9 @@ const LoginPage = () => {
       if (!res.ok) throw new Error(data.message);
       
       login(data.user);
-      // toast.success(`Welcome back, ${data.user.name}!`);
       navigate('/');
     } catch (err) {
       setError(err.message);
-      // toast.error(err.message);
     }
   };
 

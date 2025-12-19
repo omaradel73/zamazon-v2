@@ -1,4 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const VerifyPage = () => {
     const location = useLocation();
@@ -35,11 +37,9 @@ const VerifyPage = () => {
                 navigate('/login');
             } else {
                 setMsg(data.message);
-                alert(data.message);
             }
         } catch (err) {
             setMsg("Verification failed");
-            alert("Verification failed");
         }
     };
 

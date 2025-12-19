@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  // Assuming useAuth is defined elsewhere and imported
-  // const { login } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,13 +21,11 @@ const RegisterPage = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       
-      // toast.success("Registration successful! Check your email!");
-      alert('Registration successful! Check your email for verification code.');
+      // Removed auto-login, require verification first
+      alert("Registration successful! check your email for the code.");
       navigate('/verify', { state: { email } });
     } catch (err) {
       setError(err.message);
-      // toast.error(err.message);
-      alert(err.message);
     }
   };
 

@@ -20,8 +20,6 @@ import AdminPage from './pages/AdminPage';
 
 import ProtectedRoute from './components/ProtectedRoute';
 
-import { CurrencyProvider } from './context/CurrencyContext';
-
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -45,53 +43,51 @@ function App() {
       <WishlistProvider>
         <CartProvider>
           <ThemeProvider>
-            <CurrencyProvider>
-              <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+              <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
               
-                <main style={{ flex: 1, paddingBottom: '2rem' }}>
-                  <Routes>
-                    <Route path="/" element={
-                      <>
-                        {/* Hide Hero when searching */}
-                        {!searchQuery && <Hero scrollToProducts={scrollToProducts} />}
-                        
-                        <div ref={productsRef}>
-                          <ProductGrid searchQuery={searchQuery} />
-                        </div>
-                      </>
-                    } />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/verify" element={<VerifyPage />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                    <Route path="/reset-password" element={<ResetPasswordPage />} />
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/wishlist" element={<WishlistPage />} />
-                    <Route path="/profile" element={
-                      <ProtectedRoute>
-                        <ProfilePage />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/admin" element={
-                      <ProtectedRoute>
-                        <AdminPage />
-                      </ProtectedRoute>
-                    } />
-                  </Routes>
-                </main>
+              <main style={{ flex: 1, paddingBottom: '2rem' }}>
+                <Routes>
+                  <Route path="/" element={
+                    <>
+                      {/* Hide Hero when searching */}
+                      {!searchQuery && <Hero scrollToProducts={scrollToProducts} />}
+                      
+                      <div ref={productsRef}>
+                        <ProductGrid searchQuery={searchQuery} />
+                      </div>
+                    </>
+                  } />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/verify" element={<VerifyPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/wishlist" element={<WishlistPage />} />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin" element={
+                    <ProtectedRoute>
+                      <AdminPage />
+                    </ProtectedRoute>
+                  } />
+                </Routes>
+              </main>
 
-                <footer style={{ 
-                  padding: '2rem', 
-                  textAlign: 'center', 
-                  background: 'var(--bg-secondary)',
-                  borderTop: '1px solid var(--border-color)',
-                  marginTop: 'auto'
-                }}>
-                  <p>&copy; 2025 Zamazon. All rights reserved.</p>
-                </footer>
-              </div>
-            </CurrencyProvider>
+              <footer style={{ 
+                padding: '2rem', 
+                textAlign: 'center', 
+                background: 'var(--bg-secondary)',
+                borderTop: '1px solid var(--border-color)',
+                marginTop: 'auto'
+              }}>
+                <p>&copy; 2025 Zamazon. All rights reserved.</p>
+              </footer>
+            </div>
           </ThemeProvider>
         </CartProvider>
       </WishlistProvider>
