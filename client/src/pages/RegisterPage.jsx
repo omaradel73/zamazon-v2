@@ -21,8 +21,9 @@ const RegisterPage = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       
-      login(data.user);
-      navigate('/');
+      // Removed auto-login, require verification first
+      alert("Registration successful! check your email for the code.");
+      navigate('/verify');
     } catch (err) {
       setError(err.message);
     }

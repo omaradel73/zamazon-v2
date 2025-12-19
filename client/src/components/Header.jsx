@@ -76,7 +76,9 @@ const Header = ({ searchQuery, setSearchQuery }) => {
                         </button>
                     </Link>
                 )}
-                <span style={{ fontWeight: '600', color: 'var(--primary)' }}>Hi, {user.name}</span>
+                <Link to="/profile" style={{ textDecoration: 'none' }}>
+                    <span style={{ fontWeight: '600', color: 'var(--primary)' }}>Hi, {user.name}</span>
+                </Link>
                 <button 
                     onClick={logout}
                     style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.9rem' }}

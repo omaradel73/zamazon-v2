@@ -10,8 +10,12 @@ import ProductGrid from './components/ProductGrid';
 import Loading from './components/Loading';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import VerifyPage from './pages/VerifyPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import CartPage from './pages/CartPage';
 import WishlistPage from './pages/WishlistPage';
+import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 
 import ProtectedRoute from './components/ProtectedRoute';
@@ -56,8 +60,16 @@ function App() {
                   } />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/verify" element={<VerifyPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  } />
                   <Route path="/admin" element={
                     <ProtectedRoute>
                       <AdminPage />

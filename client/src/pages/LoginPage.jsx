@@ -53,7 +53,10 @@ const LoginPage = () => {
               style={{ width: '100%' }}
             />
           </div>
-          <button type="submit" className="btn-primary" style={{ marginTop: '1rem' }}>Sign In</button>
+          <div style={{ textAlign: 'right' }}>
+            <Link to="/forgot-password" style={{ fontSize: '0.9rem', color: 'var(--primary)', textDecoration: 'none' }}>Forgot Password?</Link>
+          </div>
+          <button type="submit" className="btn-primary" style={{ marginTop: '0.5rem' }}>Sign In</button>
         </form>
         <p style={{ marginTop: '1.5rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
           New to Zamazon? <Link to="/register" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Create account</Link>

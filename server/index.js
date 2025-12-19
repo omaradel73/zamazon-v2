@@ -21,7 +21,14 @@ const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    isAdmin: { type: Boolean, default: false }
+    isAdmin: { type: Boolean, default: false },
+    address: String,
+    city: String,
+    phone: String,
+    isVerified: { type: Boolean, default: false },
+    verificationCode: String,
+    resetToken: String,
+    resetTokenExpiry: Date
 });
 
 const productSchema = new mongoose.Schema({
@@ -46,6 +53,37 @@ const orderSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Product = mongoose.model('Product', productSchema);
 const Order = mongoose.model('Order', orderSchema);
+
+// ... (Seed Data remains same)
+
+// --- Profile Routes ---
+app.put('/api/users/profile', async (req, res) => {
+    const { userId, name, address, city, phone, password } = req.body;
+    try {
+        const updateData = { name, address, city, phone };
+        if (password && password.trim() !== "") {
+            updateData.password = password; // In prod use bcrypt hash!
+        }
+        
+        const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+        res.json({ 
+            message: "Profile updated", 
+            user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin, address: user.address, city: user.city, phone: user.phone } 
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/api/orders/myorders', async (req, res) => {
+    const { userId } = req.query;
+    try {
+        const orders = await Order.find({ userId }).sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
 
 // --- Seed Data (Products) ---
 const seedProducts = async () => {
@@ -141,7 +179,10 @@ app.post('/api/products', async (req, res) => {
     }
 });
 
-// Auth
+// --- Auth ---
+
+const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
+
 app.post('/api/register', async (req, res) => {
     const { email, password, name } = req.body;
     try {
@@ -152,14 +193,99 @@ app.post('/api/register', async (req, res) => {
         
         // Auto-assign admin if in whitelist
         const isAdmin = ADMIN_EMAILS.includes(email);
+        const verificationCode = generateCode();
 
-        const newUser = new User({ name, email, password, isAdmin });
+        const newUser = new User({ 
+            name, 
+            email, 
+            password, 
+            isAdmin, 
+            isVerified: false, 
+            verificationCode 
+        });
         await newUser.save();
+
+        // Send Verification Email
+        if (transporter) {
+            transporter.sendMail({
+                from: '"Zamazon Security" <security@zamazon.com>',
+                to: email,
+                subject: "Verify your email",
+                text: `Your verification code is: ${verificationCode}`
+            }).catch(console.error);
+        }
         
         res.status(201).json({ 
-            message: "User registered", 
-            user: { id: newUser._id, name: newUser.name, email: newUser.email, isAdmin: newUser.isAdmin } 
+            message: "User registered. Please verify your email.", 
+            user: { id: newUser._id, name: newUser.name, email: newUser.email, isAdmin: newUser.isAdmin, isVerified: false } 
         });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.post('/api/verify', async (req, res) => {
+    const { email, code } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        if (user.verificationCode === code) {
+            user.isVerified = true;
+            user.verificationCode = undefined;
+            await user.save();
+            res.json({ message: "Email verified successfully!", user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin, isVerified: true } });
+        } else {
+            res.status(400).json({ message: "Invalid code" });
+        }
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.post('/api/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const resetCode = generateCode(); // Using code instead of token for simplicity
+        user.resetToken = resetCode;
+        user.resetTokenExpiry = Date.now() + 3600000; // 1 hour
+        await user.save();
+
+        if (transporter) {
+            transporter.sendMail({
+                from: '"Zamazon Security" <security@zamazon.com>',
+                to: email,
+                subject: "Reset Password",
+                text: `Your password reset code is: ${resetCode}`
+            }).catch(console.error);
+        }
+
+        res.json({ message: "Reset code sent to email" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.post('/api/reset-password', async (req, res) => {
+    const { email, code, newPassword } = req.body;
+    try {
+        const user = await User.findOne({ 
+            email, 
+            resetToken: code, 
+            resetTokenExpiry: { $gt: Date.now() } 
+        });
+
+        if (!user) return res.status(400).json({ message: "Invalid or expired code" });
+
+        user.password = newPassword; // Setup hashing in prod
+        user.resetToken = undefined;
+        user.resetTokenExpiry = undefined;
+        await user.save();
+
+        res.json({ message: "Password reset successful" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -174,8 +300,52 @@ app.post('/api/login', async (req, res) => {
         }
         res.json({ 
             message: "Login successful", 
-            user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin } 
+            user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin, isVerified: user.isVerified } 
         });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// --- Admin Routes ---
+// Middleware to check if user is admin would be better, but for now we check inside
+const checkAdmin = async (req, res, next) => {
+    // In a real app, verify JWT token here. 
+    // For this simple demo, we will trust the client to send the user ID/Email or simple header?
+    // Actually, we are using stateless auth (just storing user in frontend). 
+    // To secure this properly without JWT, we'd need sessions.
+    // For this "Clone", we will pass a header 'x-admin-email' from frontend to verify identity against DB.
+    const email = req.headers['x-admin-email'];
+    if (!email) return res.status(401).json({ message: "Unauthorized" });
+    
+    const user = await User.findOne({ email });
+    if (!user || !user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+    next();
+};
+
+app.get('/api/admin/orders', checkAdmin, async (req, res) => {
+    try {
+        const orders = await Order.find().sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.get('/api/admin/users', checkAdmin, async (req, res) => {
+    try {
+        const users = await User.find({}, '-password'); // Exclude password
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/api/admin/users/:id/role', checkAdmin, async (req, res) => {
+    try {
+        const { isAdmin } = req.body;
+        const user = await User.findByIdAndUpdate(req.params.id, { isAdmin }, { new: true });
+        res.json(user);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
