@@ -81,7 +81,7 @@ const CartPage = () => {
           <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>We have sent a verification email.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
+        <div className="responsive-grid cart-layout">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {/* Cart Items */}
             {cart.map(item => (

@@ -38,7 +38,7 @@ const Hero = ({ scrollToProducts }) => {
         zIndex: -1
       }} />
 
-      <div className="container" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '4rem', alignItems: 'center' }}>
+      <div className="container responsive-grid" style={{ alignItems: 'center' }}>
         
         {/* Left Content */}
         <div className="fade-in">

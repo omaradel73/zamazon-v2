@@ -31,7 +31,15 @@ const Header = ({ searchQuery, setSearchQuery }) => {
         </Link>
 
         {/* Search */}
-        <div style={{ display: 'flex', flex: 1, margin: '0 3rem', maxWidth: '600px', position: 'relative' }}>
+        <div className="search-bar" style={{ display: 'flex', flex: 1, margin: '0 3rem', maxWidth: '600px', position: 'relative' }}>
+          <style>
+            {`
+              @media (max-width: 768px) {
+                .search-bar { margin: 0 1rem !important; }
+                .search-text { display: none; }
+              }
+            `}
+          </style>
           <input 
             type="text" 
             placeholder="Search for everything..." 
