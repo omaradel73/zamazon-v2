@@ -1,7 +1,6 @@
-import toast from 'react-hot-toast';
-import { Package, User as UserIcon, MapPin, LogOut } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Package, User as UserIcon, MapPin, LogOut } from 'lucide-react';
 import { formatCurrency } from '../utils/formatCurrency';
 
 const ProfilePage = () => {
