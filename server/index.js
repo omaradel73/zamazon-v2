@@ -204,6 +204,8 @@ app.post('/api/register', async (req, res) => {
             verificationCode 
         });
         await newUser.save();
+        
+        console.log(`[DEBUG] Verification Code for ${email}: ${verificationCode}`);
 
         // Send Verification Email
         if (transporter) {
@@ -238,6 +240,34 @@ app.post('/api/verify', async (req, res) => {
         } else {
             res.status(400).json({ message: "Invalid code" });
         }
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.post('/api/resend-code', async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+        if (user.isVerified) return res.status(400).json({ message: "User already verified" });
+
+        const verificationCode = generateCode();
+        user.verificationCode = verificationCode;
+        await user.save();
+        
+        console.log(`[DEBUG] Re-sent Verification Code for ${email}: ${verificationCode}`);
+
+        if (transporter) {
+             transporter.sendMail({
+                from: '"Zamazon Security" <security@zamazon.com>',
+                to: email,
+                subject: "Verify your email (Resend)",
+                text: `Your new verification code is: ${verificationCode}`
+            }).catch(console.error);
+        }
+
+        res.json({ message: "Verification code sent" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

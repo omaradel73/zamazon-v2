@@ -23,7 +23,7 @@ const RegisterPage = () => {
       
       // Removed auto-login, require verification first
       alert("Registration successful! check your email for the code.");
-      navigate('/verify');
+      navigate('/verify', { state: { email } });
     } catch (err) {
       setError(err.message);
     }
