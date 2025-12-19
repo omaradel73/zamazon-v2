@@ -12,13 +12,13 @@ const ProductGrid = ({ searchQuery }) => {
 
   useEffect(() => {
     // Attempt to fetch from local API, fallback to mock data if offline/error
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/products');
+const fetchProducts = async () => {
+    try {
+        const res = await fetch('/api/products');
         if (!res.ok) throw new Error('API offline');
         const data = await res.json();
         setProducts(data);
-      } catch (err) {
+    } catch (err) {
         console.log("Backend not running, serving mock data");
         // Fallback Mock Data with Premium Images
         setProducts([
