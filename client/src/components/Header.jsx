@@ -23,12 +23,10 @@ const Header = ({ searchQuery, setSearchQuery }) => {
     }}>
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '80px' }}>
         {/* Logo */}
-        <Link to="/" style={{ textDecoration: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img src="/logo.png" alt="Zamazon" style={{ height: '40px' }} />
-            <span style={{ fontSize: '1.5rem', fontWeight: 'bold', letterSpacing: '-1px', color: 'var(--text-primary)' }}>Zamazon</span>
-            </div>
-        </Link>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', gap: '0.5rem' }}>
+            <img src="/logo.svg" alt="Zamazon" style={{ height: '40px' }} />
+            <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', letterSpacing: '-1px' }}>amazon</span>
+          </Link>
 
         {/* Search */}
         <div className="search-bar" style={{ display: 'flex', flex: 1, margin: '0 3rem', maxWidth: '600px', position: 'relative' }}>
