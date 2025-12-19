@@ -21,7 +21,6 @@ import AdminPage from './pages/AdminPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import { CurrencyProvider } from './context/CurrencyContext';
-import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
