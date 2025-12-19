@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingCart, Search, User, Sun, Moon } from 'lucide-react';
+import { ShoppingCart, Search, User, Sun, Moon, Package } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -63,6 +63,11 @@ const Header = ({ searchQuery, setSearchQuery }) => {
 
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <Link to="/admin" title="Admin Dashboard">
+                    <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
+                        <Package size={24} />
+                    </button>
+                </Link>
                 <span style={{ fontWeight: '600', color: 'var(--primary)' }}>Hi, {user.name}</span>
                 <button 
                     onClick={logout}
