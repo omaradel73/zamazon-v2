@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Star, Heart } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import { useWishlist } from '../context/WishlistContext';
-import { formatCurrency } from '../utils/currency';
+import ProductCard from './ProductCard';
 
 const ProductGrid = ({ searchQuery }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart();
-  const { isInWishlist, toggleWishlist } = useWishlist();
 
   useEffect(() => {
     // Attempt to fetch from local API, fallback to mock data if offline/error
-const fetchProducts = async () => {
-    try {
+    const fetchProducts = async () => {
+      try {
         const res = await fetch('/api/products');
         if (!res.ok) throw new Error('API offline');
         const data = await res.json();
         setProducts(data);
-    } catch (err) {
+      } catch (err) {
         console.log("Backend not running, serving mock data");
         // Fallback Mock Data with Premium Images
         setProducts([
@@ -98,80 +93,7 @@ const fetchProducts = async () => {
           gap: '2rem' 
         }}>
           {filteredProducts.map((product, index) => (
-            <div 
-              key={product.id} 
-              className="glass-panel" 
-              style={{ 
-                overflow: 'hidden', 
-                display: 'flex', 
-                flexDirection: 'column',
-                animationDelay: `${index * 0.1}s` // Staggered animation
-              }}
-            >
-              <div style={{ height: '220px', background: 'var(--bg-secondary)', position: 'relative', overflow: 'hidden' }}>
-                  <button 
-                    onClick={() => toggleWishlist(product)}
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      background: 'rgba(255,255,255,0.8)',
-                      borderRadius: '50%',
-                      padding: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      zIndex: 2,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                    }}
-                  >
-                    <Heart size={20} fill={isInWishlist(product.id) ? '#ef4444' : 'none'} color={isInWishlist(product.id) ? '#ef4444' : '#333'} />
-                  </button>
-                  <img 
-                    src={product.image} 
-                    alt={product.name} 
-                    style={{ 
-                      width: '100%', 
-                      height: '100%', 
-                      objectFit: 'cover',
-                      transition: 'transform 0.3s ease'
-                    }} 
-                    onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                  />
-              </div>
-              <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: 'var(--text-primary)' }}>{product.name}</h3>
-                  <span style={{ 
-                    background: 'rgba(139, 92, 246, 0.2)', 
-                    color: '#d8b4fe', 
-                    padding: '0.25rem 0.5rem', 
-                    borderRadius: '4px',
-                    fontSize: '0.875rem', 
-                    fontWeight: 'bold'
-                  }}>{formatCurrency(product.price)}</span>
-                </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem', flex: 1 }}>
-                  {product.description}
-                </p>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#fbbf24' }}>
-                    <Star size={16} fill="#fbbf24" />
-                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{product.rating}</span>
-                  </div>
-                  <button 
-                    className="btn-primary" 
-                    onClick={() => addToCart(product)}
-                    style={{ padding: '0.5rem 1rem', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600' }}
-                  >
-                    Add to Cart
-                  </button>
-                </div>
-              </div>
-            </div>
+            <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>
       )}
