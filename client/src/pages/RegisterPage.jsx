@@ -1,11 +1,13 @@
-import toast from 'react-hot-toast';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  // Assuming useAuth is defined elsewhere and imported
+  // const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,11 +21,13 @@ const RegisterPage = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       
-      toast.success("Registration successful! Check your email.");
+      // toast.success("Registration successful! Check your email!");
+      alert('Registration successful! Check your email for verification code.');
       navigate('/verify', { state: { email } });
     } catch (err) {
       setError(err.message);
-      toast.error(err.message);
+      // toast.error(err.message);
+      alert(err.message);
     }
   };
 

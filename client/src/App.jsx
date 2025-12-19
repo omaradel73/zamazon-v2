@@ -48,7 +48,6 @@ function App() {
           <ThemeProvider>
             <CurrencyProvider>
               <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                <Toaster position="top-center" toastOptions={{ duration: 3000, style: { background: '#333', color: '#fff' } }} />
                 <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
               
                 <main style={{ flex: 1, paddingBottom: '2rem' }}>

@@ -1,4 +1,8 @@
 import toast from 'react-hot-toast';
+import { Package, User as UserIcon, MapPin, LogOut } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { formatCurrency } from '../utils/formatCurrency';
 
 const ProfilePage = () => {
     const { user, login } = useAuth(); // login updates the local user state
@@ -28,7 +32,7 @@ const ProfilePage = () => {
             setOrders(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
-            toast.error("Failed to load orders");
+            alert("Failed to load orders");
         } finally {
             setLoading(false);
         }
@@ -53,15 +57,17 @@ const ProfilePage = () => {
             const data = await res.json();
             if (res.ok) {
                 login(data.user); // Update context
-                toast.success('Profile Updated Successfully!');
+                // toast.success('Profile Updated Successfully!');
+                alert(data.message || 'Profile updated successfully');
                 setPassword(''); // Clear password field
             } else {
                 setMsg(data.message || 'Update failed');
-                toast.error(data.message || 'Update failed');
+                // toast.error(data.message || 'Update failed');
+                alert(data.message || 'Update failed');
             }
         } catch (err) {
             setMsg('Error updating profile');
-            toast.error('Error updating profile');
+            alert('Error updating profile');
         }
     };
 

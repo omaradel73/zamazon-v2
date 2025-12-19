@@ -1,4 +1,9 @@
-import toast from 'react-hot-toast';
+import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { formatCurrency } from '../utils/helpers';
 
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
@@ -24,12 +29,12 @@ const CartPage = () => {
 
   const handleCheckout = async () => {
     if (!user) {
-      toast.error("Please login to checkout");
+      alert("Please login to checkout");
       navigate('/login');
       return;
     }
     if (!shipping.address || !shipping.phone) {
-        toast.error("Please fill in your shipping details.");
+        alert("Please fill in all shipping fields correctly.");
         return;
     }
 
