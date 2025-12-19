@@ -69,13 +69,15 @@ const Header = ({ searchQuery, setSearchQuery }) => {
             {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
           </button>
 
-          {user ? (
+            {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <Link to="/admin" title="Admin Dashboard">
-                    <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
-                        <Package size={24} />
-                    </button>
-                </Link>
+                {user.isAdmin && (
+                    <Link to="/admin" title="Admin Dashboard">
+                        <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
+                            <Package size={24} />
+                        </button>
+                    </Link>
+                )}
                 <span style={{ fontWeight: '600', color: 'var(--primary)' }}>Hi, {user.name}</span>
                 <button 
                     onClick={logout}

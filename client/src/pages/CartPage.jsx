@@ -6,7 +6,7 @@ import { Trash2 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 
 const CartPage = () => {
-  const { cart, removeFromCart, clearCart, totalPrice } = useCart();
+  const { cart, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -89,7 +89,19 @@ const CartPage = () => {
                 <img src={item.image} alt={item.name} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }} />
                 <div style={{ flex: 1 }}>
                   <h3 style={{ fontSize: '1.1rem' }}>{item.name}</h3>
-                  <p style={{ color: 'var(--text-secondary)' }}>{formatCurrency(item.price)} x {item.quantity}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+                        <button 
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            style={{ background: 'none', border: 'none', padding: '5px 10px', cursor: 'pointer', color: 'var(--text-primary)' }}
+                        >-</button>
+                        <span style={{ fontWeight: '600', minWidth: '20px', textAlign: 'center' }}>{item.quantity}</span>
+                        <button 
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            style={{ background: 'none', border: 'none', padding: '5px 10px', cursor: 'pointer', color: 'var(--text-primary)' }}
+                        >+</button>
+                    </div>
+                  </div>
                 </div>
                 <div style={{ fontWeight: 'bold' }}>{formatCurrency(item.price * item.quantity)}</div>
                 <button 
