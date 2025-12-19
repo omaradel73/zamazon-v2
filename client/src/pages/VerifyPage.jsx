@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const VerifyPage = () => {
     const location = useLocation();
@@ -33,13 +31,15 @@ const VerifyPage = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                alert("Verified! Please login.");
+                toast.success("Verified! Please login.");
                 navigate('/login');
             } else {
                 setMsg(data.message);
+                toast.error(data.message);
             }
         } catch (err) {
             setMsg("Verification failed");
+            toast.error("Verification failed");
         }
     };
 

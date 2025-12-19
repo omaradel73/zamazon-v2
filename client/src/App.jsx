@@ -18,7 +18,8 @@ import WishlistPage from './pages/WishlistPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 
-import ProtectedRoute from './components/ProtectedRoute';
+import { CurrencyProvider } from './context/CurrencyContext';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,8 +44,10 @@ function App() {
       <WishlistProvider>
         <CartProvider>
           <ThemeProvider>
-            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-              <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <CurrencyProvider>
+              <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                <Toaster position="top-center" toastOptions={{ duration: 3000, style: { background: '#333', color: '#fff' } }} />
+                <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
               
               <main style={{ flex: 1, paddingBottom: '2rem' }}>
                 <Routes>
@@ -88,6 +91,7 @@ function App() {
                 <p>&copy; 2025 Zamazon. All rights reserved.</p>
               </footer>
             </div>
+          </CurrencyProvider>
           </ThemeProvider>
         </CartProvider>
       </WishlistProvider>

@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -21,9 +19,11 @@ const LoginPage = () => {
       if (!res.ok) throw new Error(data.message);
       
       login(data.user);
+      toast.success(`Welcome back, ${data.user.name}!`);
       navigate('/');
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 

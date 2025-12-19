@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { formatCurrency } from '../utils/currency';
+import toast from 'react-hot-toast';
 
 const ProfilePage = () => {
     const { user, login } = useAuth(); // login updates the local user state
@@ -30,6 +28,7 @@ const ProfilePage = () => {
             setOrders(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
+            toast.error("Failed to load orders");
         } finally {
             setLoading(false);
         }
@@ -54,13 +53,15 @@ const ProfilePage = () => {
             const data = await res.json();
             if (res.ok) {
                 login(data.user); // Update context
-                setMsg('Profile Updated Successfully!');
+                toast.success('Profile Updated Successfully!');
                 setPassword(''); // Clear password field
             } else {
                 setMsg(data.message || 'Update failed');
+                toast.error(data.message || 'Update failed');
             }
         } catch (err) {
             setMsg('Error updating profile');
+            toast.error('Error updating profile');
         }
     };
 

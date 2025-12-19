@@ -21,23 +21,116 @@ const Header = ({ searchQuery, setSearchQuery }) => {
       borderBottom: '1px solid var(--border-color)',
       transition: 'background-color 0.3s'
     }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '80px' }}>
-        {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', gap: '0.5rem' }}>
-            <img src="/logo.svg" alt="Zamazon" style={{ height: '40px' }} />
-            <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', letterSpacing: '-1px' }}>amazon</span>
-          </Link>
+      <div className="container header-container" style={{ padding: '10px 1rem' }}>
+        <style>
+          {`
+            .header-container {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              gap: 1rem;
+            }
+            .search-bar-container {
+               flex: 1;
+               margin: 0 2rem;
+               max-width: 600px;
+               min-width: 200px;
+            }
+            @media (max-width: 768px) {
+              .header-container {
+                flex-direction: column;
+                align-items: stretch;
+                padding-bottom: 1rem !important;
+              }
+              .search-bar-container {
+                margin: 0 !important;
+                order: 3; /* Move search to bottom on mobile */
+                width: 100%;
+                max-width: none;
+              }
+              .logo-actions-wrapper {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                align-items: center;
+              }
+            }
+          `}
+        </style>
+        
+        {/* Mobile Wrapper for Logo and Actions to keep them on top line */}
+        <div className="logo-actions-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', width: 'auto' }}>
+            {/* Logo */}
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', gap: '0.5rem' }}>
+                <img src="/logo.svg" alt="Zamazon" style={{ height: '35px' }} />
+                <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)', letterSpacing: '-1px' }}>amazon</span>
+            </Link>
+
+            {/* Actions (Moved inside wrapper for mobile layout) */}
+            <div className="mobile-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                 {/* Theme Toggle */}
+                <button 
+                    onClick={toggleTheme}
+                    style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}
+                >
+                    {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
+                </button>
+
+                {user ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                        {user.isAdmin && (
+                            <Link to="/admin" title="Admin Dashboard">
+                                <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
+                                    <Package size={24} />
+                                </button>
+                            </Link>
+                        )}
+                        <Link to="/profile" style={{ textDecoration: 'none' }}>
+                            <span style={{ fontWeight: '600', color: 'var(--primary)', display: 'none' }} className="desktop-only-text">Hi, {user.name}</span>
+                            <User size={24} style={{ display: 'block' }} className="mobile-only-icon" /> 
+                        </Link>
+                        <button 
+                            onClick={logout}
+                            style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.9rem' }}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                ) : (
+                    <Link to="/login">
+                        <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
+                            <User size={24} />
+                        </button>
+                    </Link>
+                )}
+                
+                <Link to="/cart" style={{ textDecoration: 'none' }}>
+                    <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', position: 'relative' }}>
+                        <ShoppingCart size={24} />
+                        {totalItems > 0 && (
+                        <span style={{
+                            position: 'absolute',
+                            top: '-5px',
+                            right: '-5px',
+                            background: 'var(--primary)',
+                            color: 'white',
+                            fontSize: '0.7rem',
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>{totalItems}</span>
+                        )}
+                    </button>
+                </Link>
+            </div>
+        </div>
 
         {/* Search */}
-        <div className="search-bar" style={{ display: 'flex', flex: 1, margin: '0 3rem', maxWidth: '600px', position: 'relative' }}>
-          <style>
-            {`
-              @media (max-width: 768px) {
-                .search-bar { margin: 0 1rem !important; }
-                .search-text { display: none; }
-              }
-            `}
-          </style>
+        <div className="search-bar-container" style={{ position: 'relative' }}>
           <input 
             type="text" 
             placeholder="Search for everything..." 
@@ -55,66 +148,6 @@ const Header = ({ searchQuery, setSearchQuery }) => {
             }}
           />
           <Search size={20} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-        </div>
-
-        {/* Actions */}
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-          {/* Theme Toggle */}
-          <button 
-            onClick={toggleTheme}
-            style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}
-          >
-            {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
-          </button>
-
-            {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                {user.isAdmin && (
-                    <Link to="/admin" title="Admin Dashboard">
-                        <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
-                            <Package size={24} />
-                        </button>
-                    </Link>
-                )}
-                <Link to="/profile" style={{ textDecoration: 'none' }}>
-                    <span style={{ fontWeight: '600', color: 'var(--primary)' }}>Hi, {user.name}</span>
-                </Link>
-                <button 
-                    onClick={logout}
-                    style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.9rem' }}
-                >
-                    Logout
-                </button>
-            </div>
-          ) : (
-            <Link to="/login">
-                <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
-                    <User size={24} />
-                </button>
-            </Link>
-          )}
-          
-          <Link to="/cart" style={{ textDecoration: 'none' }}>
-            <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', position: 'relative' }}>
-                <ShoppingCart size={24} />
-                {totalItems > 0 && (
-                <span style={{
-                    position: 'absolute',
-                    top: '-5px',
-                    right: '-5px',
-                    background: 'var(--primary)',
-                    color: 'white',
-                    fontSize: '0.7rem',
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>{totalItems}</span>
-                )}
-            </button>
-          </Link>
         </div>
       </div>
     </header>

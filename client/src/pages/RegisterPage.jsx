@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -21,11 +19,11 @@ const RegisterPage = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       
-      // Removed auto-login, require verification first
-      alert("Registration successful! check your email for the code.");
+      toast.success("Registration successful! Check your email.");
       navigate('/verify', { state: { email } });
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 
