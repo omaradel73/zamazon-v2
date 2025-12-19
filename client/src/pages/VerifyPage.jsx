@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 
 const VerifyPage = () => {
     const location = useLocation();
     const [email, setEmail] = useState(location.state?.email || '');
     const [code, setCode] = useState('');
-    const [msg, setMsg] = useState('');
-    const [timer, setTimer] = useState(0); // Cooldown timer in seconds
+    const [timer, setTimer] = useState(0); 
     const navigate = useNavigate();
+    const { showNotification } = useNotification();
     
-    // Timer countdown
-    useEffect(() => {
-        let interval = null;
-        if (timer > 0) {
-            interval = setInterval(() => {
-                setTimer((prev) => prev - 1);
-            }, 1000);
-        } else if (timer === 0) {
-            clearInterval(interval);
-        }
-        return () => clearInterval(interval);
-    }, [timer]);
+    // ... useEffect ...
 
     const handleVerify = async (e) => {
         e.preventDefault();
@@ -33,13 +23,13 @@ const VerifyPage = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                alert("Verified! Please login.");
+                showNotification("Verified! Please login.", "success");
                 navigate('/login');
             } else {
-                setMsg(data.message);
+                showNotification(data.message, "error");
             }
         } catch (err) {
-            setMsg("Verification failed");
+            showNotification("Verification failed", "error");
         }
     };
 

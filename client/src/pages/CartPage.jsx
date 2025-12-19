@@ -52,12 +52,15 @@ const CartPage = () => {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-
-      setMessage(`Order placed! Verification email sent to ${user.email}.`);
-      clearCart();
+      if (res.ok) {
+        clearCart();
+        showNotification("Order placed successfully! Verification email sent.", "success");
+        navigate('/profile');
+      } else {
+        showNotification(data.message || "Checkout failed", "error");
+      }
     } catch (err) {
-      setMessage("Error placing order: " + err.message);
+      showNotification("Error during checkout: " + err.message, "error");
     } finally {
       setLoading(false);
     }

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNotification } from '../context/NotificationContext';
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState('');
-    const [msg, setMsg] = useState('');
     const navigate = useNavigate();
+    const { showNotification } = useNotification();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,13 +17,13 @@ const ForgotPasswordPage = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                alert("Reset code sent to your email.");
-                navigate('/reset-password?email=' + email);
+                showNotification("Reset code sent! Check your email.", "success");
+                navigate('/reset-password', { state: { email } });
             } else {
-                setMsg(data.message);
+                showNotification(data.message, "error");
             }
         } catch (err) {
-            setMsg("Failed to send request");
+            showNotification("Failed to send code", "error");
         }
     };
 
