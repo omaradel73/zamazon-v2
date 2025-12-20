@@ -93,10 +93,31 @@ const AdminLayout = () => {
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
-                <Outlet />
-            </main>
+            {/* Main Content Wrapper */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+                
+                {/* Mobile Admin Header */}
+                <header className="mobile-admin-header" style={{ 
+                    padding: '1rem', 
+                    background: 'var(--bg-primary)', 
+                    borderBottom: '1px solid var(--border-color)',
+                    display: 'none', // Controlled by CSS media query
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}>
+                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', textDecoration: 'none', fontWeight: '500' }}>
+                        <Home size={18} /> Store
+                    </Link>
+                    <span style={{ fontWeight: 'bold' }}>Admin</span>
+                    <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#ef4444' }}>
+                        <LogOut size={18} />
+                    </button>
+                </header>
+
+                <main style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+                    <Outlet />
+                </main>
+            </div>
         </div>
     );
 };

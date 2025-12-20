@@ -14,10 +14,10 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product, quantity = 1) => {
     setCart(current => {
-      const existing = current.find(item => item.id === product.id);
+      const existing = current.find(item => item._id === product._id);
       if (existing) {
         return current.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+          item._id === product._id ? { ...item, quantity: item.quantity + quantity } : item
         );
       }
       return [...current, { ...product, quantity }];
@@ -25,14 +25,14 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (id) => {
-    setCart(current => current.filter(item => item.id !== id));
+    setCart(current => current.filter(item => item._id !== id));
   };
 
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity < 1) return;
     setCart(current =>
       current.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
+        item._id === id ? { ...item, quantity: newQuantity } : item
       )
     );
   };

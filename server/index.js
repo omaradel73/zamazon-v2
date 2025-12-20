@@ -179,6 +179,30 @@ app.post('/api/products', async (req, res) => {
     }
 });
 
+app.put('/api/products/:id', async (req, res) => {
+    try {
+        const { name, price, description, image } = req.body;
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
+            name,
+            price: parseFloat(price),
+            description,
+            image
+        }, { new: true });
+        res.json(updatedProduct);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+    try {
+        await Product.findByIdAndDelete(req.params.id);
+        res.json({ message: "Product deleted" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // --- Auth ---
 
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();

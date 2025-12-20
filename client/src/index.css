@@ -184,6 +184,7 @@ body {
     }
     .checkout-left { padding: 1rem !important; }
     /* Hero Mobile */
+    .responsive-grid { display: block !important; } /* Stop grid from messing up layout */
     .hero-title { font-size: 3rem; text-align: center; }
     .hero-subtitle { font-size: 1rem; text-align: center; margin: 0 auto 2rem auto; }
     .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
@@ -196,36 +197,29 @@ body {
     .desktop-hero-content { display: none !important; }
     .mobile-hero-content { 
         display: block !important; 
-        grid-column: 1 / -1; 
-        max-width: 100% !important; 
-        margin: 0 0 2rem 0; 
         width: 100%; 
+        padding: 0 1rem;
+        box-sizing: border-box;
     }
-    .mobile-hero-content > div { margin: 0 auto; max-width: 400px; }
+    .mobile-hero-content > div { margin: 0 auto; max-width: 100%; }
     
     .admin-sidebar { display: none !important; }
-
-    /* Admin Mobile Tweaks */
-    .admin-mobile-header { display: flex !important; }
-    .desktop-only { display: none !important; }
-    .desktop-table-container { display: none !important; }
-    .mobile-cards-view { display: flex !important; }
 
     /* Cart Overhaul for Mobile */
     .cart-item { 
         flex-direction: column; 
         align-items: stretch !important; 
-        gap: 0.5rem !important; 
+        gap: 0.5rem !important; /* Tighter gap */
         background: var(--bg-primary);
         border: 1px solid var(--border-color) !important;
         border-radius: 12px;
-        padding: 0.75rem !important; 
+        padding: 0.75rem !important; /* Tighter padding ("Zoomed out feel") */
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         width: 100%;
     }
     .cart-item img { 
         width: 100% !important; 
-        height: 180px !important; 
+        height: 180px !important; /* Slightly smaller image */
         border-radius: 8px;
         margin-bottom: 0.5rem;
         object-fit: contain !important;
@@ -240,9 +234,47 @@ body {
     
     /* Global Container Adjustment for "Fit" */
     .container {
-        padding: 0 0.5rem !important; 
+        padding: 0 0.5rem !important; /* Maximize width usage */
     }
-    .glass-panel { padding: 1rem !important; } /* Reduce padding in admin panel */
+    
+    /* --- Admin Dashboard Mobile Polish --- */
+    .mobile-admin-header { display: flex !important; }
+    
+    /* Transform Admin Tables to Cards */
+    main table { display: block; border: none; }
+    main thead { display: none; }
+    main tbody { display: block; }
+    main tr { 
+        display: block; 
+        margin-bottom: 1rem; 
+        border: 1px solid var(--border-color); 
+        border-radius: 8px; 
+        background: var(--bg-primary);
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    main td { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        border: none !important; 
+        padding: 0.5rem 0 !important; 
+        text-align: right;
+    }
+    main td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        text-align: left;
+        padding-right: 1rem;
+        color: var(--text-secondary);
+    }
+    /* Fix Actions column alignment */
+    main td[data-label="Actions"] {
+        justify-content: flex-end;
+        border-top: 1px solid var(--border-color) !important;
+        margin-top: 0.5rem;
+        padding-top: 1rem !important;
+    }
 
     /* Profile Mobile */
     .profile-form-row { grid-template-columns: 1fr !important; }
