@@ -76,11 +76,12 @@ const VerifyPage = () => {
                         <label>Email</label>
                         <input 
                             type="email" 
+                            className="input-field"
                             value={email} 
                             onChange={e => setEmail(e.target.value)} 
                             required 
                             disabled={!!location.state?.email} // Disable if passed from register
-                            style={{ width: '100%', opacity: location.state?.email ? 0.7 : 1 }} 
+                            style={{ opacity: location.state?.email ? 0.7 : 1 }} 
                             placeholder="Enter your email"
                         />
                     </div>
@@ -88,10 +89,10 @@ const VerifyPage = () => {
                         <label>Verification Code</label>
                         <input 
                             type="text" 
+                            className="input-field"
                             value={code} 
                             onChange={e => setCode(e.target.value)} 
                             required 
-                            style={{ width: '100%' }} 
                             placeholder="6-digit code"
                         />
                     </div>

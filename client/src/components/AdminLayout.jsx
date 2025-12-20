@@ -23,7 +23,7 @@ const AdminLayout = () => {
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-secondary)' }}>
             {/* Sidebar */}
-            <aside style={{ 
+            <aside className="admin-sidebar" style={{ 
                 width: '250px', 
                 background: 'var(--bg-primary)', 
                 borderRight: '1px solid var(--border-color)',

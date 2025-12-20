@@ -37,15 +37,15 @@ const ResetPasswordPage = () => {
                 <form onSubmit={handleSubmit}>
                      <div style={{ marginBottom: '1rem' }}>
                         <label>Email</label>
-                        <input type="email" value={email} disabled style={{ width: '100%', opacity: 0.7 }} />
+                        <input type="email" className="input-field" value={email} disabled style={{ opacity: 0.7 }} />
                     </div>
                     <div style={{ marginBottom: '1rem' }}>
                         <label>Reset Code</label>
-                        <input type="text" value={code} onChange={e => setCode(e.target.value)} required style={{ width: '100%' }} />
+                        <input type="text" className="input-field" value={code} onChange={e => setCode(e.target.value)} required />
                     </div>
                     <div style={{ marginBottom: '1rem' }}>
                         <label>New Password</label>
-                        <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required style={{ width: '100%' }} />
+                        <input type="password" className="input-field" value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
                     </div>
                     <button type="submit" className="btn-primary" style={{ width: '100%' }}>Reset Password</button>
                 </form>

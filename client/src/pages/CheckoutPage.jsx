@@ -18,9 +18,9 @@ const CheckoutPage = () => {
     firstName: '',
     lastName: '',
     address: '',
-    city: 'Al Sharqia', // Default from image
+    city: 'Cairo', 
     postalCode: '',
-    phone: ''
+    phone: '+20 '
   });
 
   const shippingCost = 85; 
@@ -76,14 +76,7 @@ const CheckoutPage = () => {
 
   return (
     <div className="page-enter checkout-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '100vh' }}>
-      <style>
-        {`
-            @media (max-width: 900px) {
-                .checkout-layout { grid-template-columns: 1fr !important; }
-                .order-summary { order: -1; border-left: none !important; border-bottom: 1px solid var(--border-color); }
-            }
-        `}
-      </style>
+      {/* Header handled in CSS */}
       
       {/* Left: Information */}
       <div className="checkout-left" style={{ padding: '4rem 2rem', maxWidth: '600px', margin: '0 0 0 auto', width: '100%' }}>
@@ -101,7 +94,6 @@ const CheckoutPage = () => {
          <div style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: '8px', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-secondary)' }}>
              <span style={{ color: 'var(--text-secondary)' }}>Contact</span>
              <span style={{ fontWeight: '500' }}>{user?.email}</span>
-             <button style={{ border: 'none', background: 'none', color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigate('/login')}>Change</button>
          </div>
 
          <form onSubmit={handleCheckout}>
@@ -140,16 +132,7 @@ const CheckoutPage = () => {
                     required
                 />
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-                    <input 
-                        type="text" 
-                        placeholder="City" 
-                        className="input-field"
-                         // Assuming City matches Governorate in user request image logic, simplifying
-                        value={shipping.city} 
-                        onChange={e => setShipping({...shipping, city: e.target.value})}
-                        required
-                    />
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
                     <select 
                         className="input-field"
                         value={shipping.city}
@@ -175,10 +158,17 @@ const CheckoutPage = () => {
                         placeholder="Phone" 
                         className="input-field"
                         value={shipping.phone}
-                        onChange={e => setShipping({...shipping, phone: e.target.value})}
+                        onChange={e => {
+                            // Prevent deleting prefix
+                            if (e.target.value.startsWith('+20 ')) {
+                                setShipping({...shipping, phone: e.target.value})
+                            } else if (e.target.value === '+20') {
+                                setShipping({...shipping, phone: '+20 '})
+                            }
+                        }}
                         required
                     />
-                    <span style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', fontSize: '1.2rem' }}>?</span>
+                    <img src="https://flagcdn.com/w40/eg.png" alt="Egypt Flag" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', width: '24px', borderRadius: '2px' }} />
                 </div>
 
                 <h2 style={{ fontSize: '1.25rem', margin: '1rem 0 0.5rem 0' }}>Shipping Method</h2>
@@ -219,7 +209,7 @@ const CheckoutPage = () => {
       </div>
 
       {/* Right: Summary */}
-      <div className="order-summary" style={{ background: '#f5f5f5', borderLeft: '1px solid var(--border-color)', padding: '4rem 2rem' }}>
+      <div className="order-summary">
         <div style={{ maxWidth: '450px', width: '100%' }}>
             {cart.map(item => (
                 <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
@@ -235,29 +225,28 @@ const CheckoutPage = () => {
                         </span>
                     </div>
                     <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: '500', color: '#333' }}>{item.name}</div>
-                        {/* <div style={{ fontSize: '0.85rem', color: '#666' }}>S / Black</div> */}
+                        <div className="summary-text" style={{ fontWeight: '500' }}>{item.name}</div>
                     </div>
-                    <div style={{ fontWeight: '500', color: '#333' }}>{formatCurrency(item.price * item.quantity)}</div>
+                    <div className="summary-text" style={{ fontWeight: '500' }}>{formatCurrency(item.price * item.quantity)}</div>
                 </div>
             ))}
 
-            <div style={{ borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5', margin: '2rem 0', padding: '1.5rem 0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#555' }}>
+            <div style={{ borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)', margin: '2rem 0', padding: '1.5rem 0' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }} className="summary-subtext">
                     <span>Subtotal</span>
-                    <span style={{ color: '#333', fontWeight: '500' }}>{formatCurrency(totalPrice)}</span>
+                    <span className="summary-text" style={{ fontWeight: '500' }}>{formatCurrency(totalPrice)}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#555' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }} className="summary-subtext">
                     <span>Shipping</span>
-                    <span style={{ color: '#333', fontWeight: '500' }}>{formatCurrency(shippingCost)}</span>
+                    <span className="summary-text" style={{ fontWeight: '500' }}>{formatCurrency(shippingCost)}</span>
                 </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '1.2rem', color: '#333' }}>Total</span>
+                <span className="summary-text" style={{ fontSize: '1.2rem' }}>Total</span>
                 <div style={{ display: 'flex', alignItems: 'end', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.9rem', color: '#666', marginBottom: '4px' }}>EGP</span>
-                    <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#333' }}>{formatCurrency(finalTotal).replace('EGP', '').trim()}</span>
+                    <span className="summary-subtext" style={{ fontSize: '0.9rem', marginBottom: '4px' }}>EGP</span>
+                    <span className="summary-text" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{formatCurrency(finalTotal).replace('EGP', '').trim()}</span>
                 </div>
             </div>
         </div>

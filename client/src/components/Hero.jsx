@@ -14,7 +14,8 @@ const Hero = ({ scrollToProducts }) => {
       {/* ... (Background elements same as before) ... */}
       
       {/* Dynamic Background Elements */}
-      <div style={{
+      {/* Dynamic Background Elements */}
+      <div className="hero-blob" style={{
         position: 'absolute',
         top: '-20%',
         right: '-10%',
@@ -26,7 +27,7 @@ const Hero = ({ scrollToProducts }) => {
         zIndex: -1,
         animation: 'pulse 8s infinite ease-in-out'
       }} />
-      <div style={{
+      <div className="hero-blob" style={{
         position: 'absolute',
         bottom: '-10%',
         left: '-10%',
@@ -40,8 +41,41 @@ const Hero = ({ scrollToProducts }) => {
 
       <div className="container responsive-grid" style={{ alignItems: 'center' }}>
         
-        {/* Left Content */}
-        <div className="fade-in">
+        {/* Mobile Hero (New) */}
+        <div className="mobile-hero-content fade-in">
+             <div style={{ 
+                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', 
+                borderRadius: '20px', 
+                padding: '2rem', 
+                color: 'white',
+                textAlign: 'center',
+                boxShadow: '0 10px 25px -5px rgba(99, 102, 241, 0.4)',
+                marginBottom: '2rem'
+             }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.2)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                    <Zap size={14} fill="white" /> v2.0 Mobile
+                </div>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: '900', lineHeight: 1.1, marginBottom: '0.5rem' }}>Zamazon</h1>
+                <p style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '1.5rem' }}>Premium Shopping in Your Pocket.</p>
+                <button 
+                    onClick={scrollToProducts}
+                    style={{ 
+                        background: 'white', 
+                        color: '#6366f1', 
+                        border: 'none', 
+                        padding: '12px 24px', 
+                        borderRadius: '12px', 
+                        fontWeight: '700',
+                        width: '100%'
+                    }}
+                >
+                    Shop Now
+                </button>
+             </div>
+        </div>
+
+        {/* Desktop Content (Hidden on Mobile) */}
+        <div className="fade-in hero-content desktop-hero-content">
           <div style={{ 
             display: 'inline-flex', 
             alignItems: 'center', 
@@ -58,13 +92,7 @@ const Hero = ({ scrollToProducts }) => {
             <Zap size={16} fill="#d8b4fe" /> v2.0 is Live
           </div>
           
-          <h1 style={{ 
-            fontSize: '5rem', 
-            fontWeight: '900', 
-            marginBottom: '1.5rem',
-            lineHeight: 1,
-            letterSpacing: '-2px'
-          }}>
+          <h1 className="hero-title">
             Next Gen <br />
             <span style={{ 
               background: 'linear-gradient(135deg, #fff 0%, #94a3b8 100%)', 
@@ -73,13 +101,7 @@ const Hero = ({ scrollToProducts }) => {
              }}>Commerce</span>
           </h1>
           
-          <p style={{ 
-            fontSize: '1.25rem', 
-            color: 'var(--text-secondary)', 
-            maxWidth: '500px', 
-            lineHeight: 1.6,
-            marginBottom: '2.5rem' 
-          }}>
+          <p className="hero-subtitle">
             Experience Zamazon. The world's fastest growing premium marketplace. 
             Powered by AI, secure payments, and instant delivery.
           </p>
@@ -94,7 +116,7 @@ const Hero = ({ scrollToProducts }) => {
             </button>
           </div>
           
-          <div style={{ marginTop: '3rem', display: 'flex', gap: '2rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+          <div className="hero-stats" style={{ marginTop: '3rem', display: 'flex', gap: '2rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             <div>
                 <strong style={{ color: 'white', display: 'block', fontSize: '1.5rem' }}>50k+</strong>
                 Products
@@ -107,8 +129,8 @@ const Hero = ({ scrollToProducts }) => {
           </div>
         </div>
 
-        {/* Right Image */}
-        <div style={{ position: 'relative' }}>
+        {/* Right Image (Desktop Only) */}
+        <div className="hero-image-right desktop-hero-content" style={{ position: 'relative' }}>
             <div style={{
                 position: 'absolute',
                 top: '50%',
@@ -135,7 +157,7 @@ const Hero = ({ scrollToProducts }) => {
             />
             
             {/* Floating Card */}
-            <div className="glass-panel" style={{
+            <div className="glass-panel floating-card" style={{
                 position: 'absolute',
                 bottom: '40px',
                 left: '-40px',

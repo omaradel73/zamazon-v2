@@ -40,20 +40,20 @@ const LoginPage = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Email</label>
             <input 
               type="email" 
+              className="input-field"
               value={email} 
               onChange={(e) => setEmail(e.target.value)}
               required 
-              style={{ width: '100%' }}
             />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Password</label>
             <input 
               type="password" 
+              className="input-field"
               value={password} 
               onChange={(e) => setPassword(e.target.value)}
               required 
-              style={{ width: '100%' }}
             />
           </div>
           <div style={{ textAlign: 'right' }}>

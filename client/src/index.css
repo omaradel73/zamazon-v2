@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :root {
   --primary: #3b82f6;
   --primary-hover: #2563eb;
@@ -139,12 +143,135 @@ body {
   animation: fadeIn 0.4s ease-out;
 }
 
+/* Hero Styles */
+.hero-title {
+    font-size: 5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    line-height: 1;
+    letter-spacing: -2px;
+}
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 500px;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
 /* Mobile Tweaks */
 @media (max-width: 768px) {
     .cart-layout {
         grid-template-columns: 1fr;
     }
+    .cart-item { flex-direction: column; align-items: stretch !important; gap: 1rem !important; }
+    .cart-item img { width: 100% !important; height: 200px !important; }
+    
     .container {
         padding: 0 1rem;
     }
+    .checkout-layout {
+        grid-template-columns: 1fr !important; 
+    }
+    .order-summary { 
+        order: -1; 
+        border-left: none !important; 
+        border-bottom: 1px solid var(--border-color);
+        padding: 2rem 1rem !important;
+        position: static !important; /* Reset sticky on mobile */
+        height: auto !important;
+        overflow-y: visible !important;
+    }
+    .checkout-left { padding: 1rem !important; }
+    /* Hero Mobile */
+    .hero-title { font-size: 3rem; text-align: center; }
+    .hero-subtitle { font-size: 1rem; text-align: center; margin: 0 auto 2rem auto; }
+    .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .hero-stats { justify-content: center; }
+    .hero-image-right { width: 100%; max-width: 350px; margin: 2rem auto 0; }
+    .floating-card { display: none !important; }
+    .hero-blob { display: none !important; } /* Hide background blobs */
+
+    /* Visbility Toggles */
+    .desktop-hero-content { display: none !important; }
+    .mobile-hero-content { 
+        display: block !important; 
+        grid-column: 1 / -1; 
+        max-width: 100% !important; 
+        margin: 0 0 2rem 0; 
+        width: 100%; 
+    }
+    .mobile-hero-content > div { margin: 0 auto; max-width: 400px; }
+    
+    .admin-sidebar { display: none !important; }
+
+    /* Admin Mobile Tweaks */
+    .admin-mobile-header { display: flex !important; }
+    .desktop-only { display: none !important; }
+    .desktop-table-container { display: none !important; }
+    .mobile-cards-view { display: flex !important; }
+
+    /* Cart Overhaul for Mobile */
+    .cart-item { 
+        flex-direction: column; 
+        align-items: stretch !important; 
+        gap: 0.5rem !important; 
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color) !important;
+        border-radius: 12px;
+        padding: 0.75rem !important; 
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        width: 100%;
+    }
+    .cart-item img { 
+        width: 100% !important; 
+        height: 180px !important; 
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        object-fit: contain !important;
+        background: #f9fafb;
+    }
+
+    /* Mobile Page Heights */
+    .cart-layout, .checkout-layout {
+        min-height: 60vh; 
+        padding-bottom: 4rem;
+    }
+    
+    /* Global Container Adjustment for "Fit" */
+    .container {
+        padding: 0 0.5rem !important; 
+    }
+    .glass-panel { padding: 1rem !important; } /* Reduce padding in admin panel */
+
+    /* Profile Mobile */
+    .profile-form-row { grid-template-columns: 1fr !important; }
+    .order-header, .order-footer { flex-direction: column; align-items: flex-start !important; gap: 0.5rem; }
+    .order-header > div { width: 100%; display: flex; justify-content: space-between; } 
+    
+    /* Global Input Fix for Mobile Zoom */
+    input, select, textarea { font-size: 16px !important; }
 }
+
+/* Desktop Visibility Defaults (outside media query) */
+.mobile-hero-content { display: none; }
+
+.order-summary {
+    background: #f9fafb; /* Light mode */
+    border-left: 1px solid var(--border-color);
+    padding: 4rem 2rem;
+    color: var(--text-primary);
+    position: sticky;
+    top: 5.5rem;
+    height: calc(100vh - 5.5rem);
+    overflow-y: auto;
+    align-self: start; /* Critical for sticky in grid */
+}
+
+[data-theme='dark'] .order-summary {
+    background: #020617; /* Darker than primary #111827 */
+    border-left: 1px solid var(--border-color);
+}
+.order-summary .summary-text { color: var(--text-primary); }
+.order-summary .summary-subtext { color: var(--text-secondary); }
+

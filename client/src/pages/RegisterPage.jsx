@@ -41,30 +41,30 @@ const RegisterPage = () => {
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Full Name</label>
             <input 
               type="text" 
+              className="input-field"
               value={name} 
               onChange={(e) => setName(e.target.value)}
               required 
-              style={{ width: '100%' }}
             />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Email</label>
             <input 
               type="email" 
+              className="input-field"
               value={email} 
               onChange={(e) => setEmail(e.target.value)}
               required 
-              style={{ width: '100%' }}
             />
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Password</label>
             <input 
               type="password" 
+              className="input-field"
               value={password} 
               onChange={(e) => setPassword(e.target.value)}
               required 
-              style={{ width: '100%' }}
             />
           </div>
           <button type="submit" className="btn-primary" style={{ marginTop: '1rem' }}>Register</button>

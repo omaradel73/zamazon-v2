@@ -126,7 +126,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <Link to="/profile?tab=orders" style={{ textDecoration: 'none' }}>
+                        <Link to="/profile?tab=orders" style={{ textDecoration: 'none' }} onClick={() => document.getElementById('user-menu').classList.remove('show')}>
                             <button style={{ 
                                 width: '100%', padding: '12px', 
                                 background: 'var(--bg-secondary)', border: 'none', borderRadius: '12px',
@@ -136,7 +136,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
                                 <Package size={18} /> Orders
                             </button>
                         </Link>
-                        <Link to="/profile" style={{ textDecoration: 'none' }}>
+                        <Link to="/profile" style={{ textDecoration: 'none' }} onClick={() => document.getElementById('user-menu').classList.remove('show')}>
                             <button style={{ 
                                 width: '100%', padding: '12px', 
                                 background: 'var(--bg-secondary)', border: 'none', borderRadius: '12px',
@@ -149,7 +149,7 @@ const Header = ({ searchQuery, setSearchQuery }) => {
                     </div>
 
                     {user.isAdmin && (
-                         <Link to="/admin" style={{ textDecoration: 'none' }}>
+                         <Link to="/admin" style={{ textDecoration: 'none' }} onClick={() => document.getElementById('user-menu').classList.remove('show')}>
                             <button style={{ 
                                 width: '100%', padding: '12px', 
                                 background: 'var(--bg-secondary)', border: 'none', borderRadius: '12px',

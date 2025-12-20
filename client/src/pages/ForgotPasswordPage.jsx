@@ -34,7 +34,7 @@ const ForgotPasswordPage = () => {
                 <form onSubmit={handleSubmit}>
                     <div style={{ marginBottom: '1rem' }}>
                         <label>Email Address</label>
-                        <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ width: '100%' }} />
+                        <input type="email" className="input-field" value={email} onChange={e => setEmail(e.target.value)} required />
                     </div>
                     <button type="submit" className="btn-primary" style={{ width: '100%' }}>Send Reset Code</button>
                 </form>

@@ -26,7 +26,7 @@ const CartPage = () => {
         {/* Cart Items List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {cart.map(item => (
-              <div key={item.id} style={{ display: 'flex', gap: '2rem', alignItems: 'start', paddingBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
+              <div key={item.id} className="cart-item" style={{ display: 'flex', gap: '2rem', alignItems: 'start', paddingBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
                 <img src={item.image} alt={item.name} style={{ width: '120px', height: '150px', objectFit: 'cover' }} />
                 
                 <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between' }}>
@@ -68,12 +68,7 @@ const CartPage = () => {
 
         {/* Summary Card */}
         <div style={{ background: 'var(--bg-secondary)', padding: '2rem', borderRadius: '4px' }}>
-            <div style={{ borderBottom: '1px solid #d1d5db', paddingBottom: '1rem', marginBottom: '1rem' }}>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                    <span>Discount</span>
-                    <span>+</span>
-                 </div>
-            </div>
+            {/* Discount section removed */}
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Estimated total</span>

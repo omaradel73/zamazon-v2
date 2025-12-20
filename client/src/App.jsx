@@ -8,6 +8,7 @@ import { NotificationProvider } from './context/NotificationContext';
 
 import NotificationBanner from './components/NotificationBanner';
 import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 import Loading from './components/Loading';
 import ShopLayout from './components/ShopLayout';
 import HomePage from './pages/HomePage';
@@ -46,8 +47,13 @@ function App() {
                 <Route element={<ShopLayout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}>
                     <Route path="/" element={<HomePage searchQuery={searchQuery} />} />
                     <Route path="/products" element={<HomePage searchQuery={searchQuery} />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
+                    
+                    {/* Public Routes (Redirect if logged in) */}
+                    <Route element={<PublicRoute />}>
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                    </Route>
+
                     <Route path="/verify-email" element={<VerifyPage />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password" element={<ResetPasswordPage />} />
