@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Star, Heart, Check, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useNotification } from '../context/NotificationContext';
 import { formatCurrency } from '../utils/currency';
 
 const ProductCard = ({ product, index }) => {
@@ -11,9 +12,12 @@ const ProductCard = ({ product, index }) => {
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
 
+  const { showNotification } = useNotification();
+
   const handleAddToCart = () => {
     setIsAdding(true);
     addToCart(product, quantity);
+    showNotification(`Added ${quantity} ${product.name} to cart`, 'success');
     
     // Reset animation state after 1s
     setTimeout(() => {

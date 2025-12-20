@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 import { useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
@@ -8,6 +9,7 @@ import { formatCurrency } from '../utils/currency';
 const CartPage = () => {
   const { cart, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
   const { user } = useAuth();
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -33,7 +35,7 @@ const CartPage = () => {
       return;
     }
     if (!shipping.address || !shipping.phone) {
-        alert("Please fill in your shipping details.");
+        showNotification("Please fill in your shipping details.", "error");
         return;
     }
 
@@ -52,15 +54,12 @@ const CartPage = () => {
         }),
       });
       const data = await res.json();
-      if (res.ok) {
-        clearCart();
-        showNotification("Order placed successfully! Verification email sent.", "success");
-        navigate('/profile');
-      } else {
-        showNotification(data.message || "Checkout failed", "error");
-      }
+      if (!res.ok) throw new Error(data.message);
+
+      setMessage(`Order placed! Verification email sent to ${user.email}.`);
+      clearCart();
     } catch (err) {
-      showNotification("Error during checkout: " + err.message, "error");
+      setMessage("Error placing order: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -75,7 +74,7 @@ const CartPage = () => {
   }
 
   return (
-    <div className="container" style={{ padding: '4rem 0' }}>
+    <div className="container page-enter" style={{ padding: '4rem 0' }}>
       <h2 style={{ marginBottom: '2rem' }}>Shopping Cart</h2>
       
       {message ? (

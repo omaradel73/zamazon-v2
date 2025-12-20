@@ -9,8 +9,8 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
-  const navigate = useNavigate();
   const { showNotification } = useNotification();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,15 +24,15 @@ const RegisterPage = () => {
       if (!res.ok) throw new Error(data.message);
       
       // Removed auto-login, require verification first
-      showNotification("Registration successful! Check your email.", "success");
-      navigate('/verify', { state: { email } });
+      showNotification("Registration successful! Check your email for the code.", "success");
+      navigate('/verify-email', { state: { email } });
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div className="container" style={{ padding: '4rem 0', display: 'flex', justifyContent: 'center' }}>
+    <div className="container page-enter" style={{ padding: '4rem 0', display: 'flex', justifyContent: 'center' }}>
       <div className="glass-panel" style={{ padding: '2rem', width: '100%', maxWidth: '400px' }}>
         <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Create Account</h2>
         {error && <div style={{ color: '#ef4444', marginBottom: '1rem', background: 'rgba(239,68,68,0.1)', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}

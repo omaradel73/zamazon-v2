@@ -82,7 +82,7 @@ const ProductGrid = ({ searchQuery }) => {
   if (loading) return <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>Loading...</div>;
 
   return (
-    <section className="container" style={{ paddingBottom: '4rem' }}>
+    <section className="container page-enter" style={{ paddingBottom: '4rem' }}>
       <h2 style={{ fontSize: '2rem', marginBottom: '2rem' }}>Trending Now</h2>
       {filteredProducts.length === 0 ? (
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>No products found matching "{searchQuery}"</p>

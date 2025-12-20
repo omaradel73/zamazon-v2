@@ -3,7 +3,7 @@ import { ArrowRight, Zap } from 'lucide-react';
 
 const Hero = ({ scrollToProducts }) => {
   return (
-    <section style={{ 
+    <section className="page-enter" style={{ 
       padding: '4rem 0', 
       position: 'relative', 
       overflow: 'hidden',

@@ -19,13 +19,13 @@ const ResetPasswordPage = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                showNotification("Password reset successful. Please login.", "success");
+                alert("Password reset successful. Please login.");
                 navigate('/login');
             } else {
-                showNotification(data.message, "error");
+                setMsg(data.message);
             }
         } catch (err) {
-            showNotification("Reset failed", "error");
+            setMsg("Reset failed");
         }
     };
 

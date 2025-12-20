@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
+  const { showNotification } = useNotification();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,6 +23,7 @@ const LoginPage = () => {
       if (!res.ok) throw new Error(data.message);
       
       login(data.user);
+      showNotification(`Welcome back, ${data.user.name}!`, 'success');
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -28,7 +31,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="container" style={{ padding: '4rem 0', display: 'flex', justifyContent: 'center' }}>
+    <div className="container page-enter" style={{ padding: '4rem 0', display: 'flex', justifyContent: 'center' }}>
       <div className="glass-panel" style={{ padding: '2rem', width: '100%', maxWidth: '400px' }}>
         <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Welcome Back</h2>
         {error && <div style={{ color: '#ef4444', marginBottom: '1rem', background: 'rgba(239,68,68,0.1)', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}

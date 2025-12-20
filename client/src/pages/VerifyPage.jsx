@@ -7,11 +7,23 @@ const VerifyPage = () => {
     const location = useLocation();
     const [email, setEmail] = useState(location.state?.email || '');
     const [code, setCode] = useState('');
-    const [timer, setTimer] = useState(0); 
-    const navigate = useNavigate();
+    const [msg, setMsg] = useState('');
+    const [timer, setTimer] = useState(0); // Cooldown timer in seconds
     const { showNotification } = useNotification();
+    const navigate = useNavigate();
     
-    // ... useEffect ...
+    // Timer countdown
+    useEffect(() => {
+        let interval = null;
+        if (timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1);
+            }, 1000);
+        } else if (timer === 0) {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [timer]);
 
     const handleVerify = async (e) => {
         e.preventDefault();
@@ -26,10 +38,10 @@ const VerifyPage = () => {
                 showNotification("Verified! Please login.", "success");
                 navigate('/login');
             } else {
-                showNotification(data.message, "error");
+                setMsg(data.message);
             }
         } catch (err) {
-            showNotification("Verification failed", "error");
+            setMsg("Verification failed");
         }
     };
 
@@ -55,7 +67,7 @@ const VerifyPage = () => {
     };
 
     return (
-        <div className="container" style={{ padding: '4rem 0', display: 'flex', justifyContent: 'center' }}>
+        <div className="container page-enter" style={{ padding: '4rem 0', display: 'flex', justifyContent: 'center' }}>
             <div className="glass-panel" style={{ padding: '2rem', width: '100%', maxWidth: '400px' }}>
                 <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Verify Email</h2>
                 {msg && <p style={{ color: msg.includes('resent') ? 'green' : 'red', textAlign: 'center' }}>{msg}</p>}
