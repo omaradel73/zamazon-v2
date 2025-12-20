@@ -45,13 +45,15 @@ const Header = ({ searchQuery, setSearchQuery }) => {
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: '100%',
-              padding: '12px 20px 12px 50px',
-              borderRadius: '99px',
+              padding: '12px 20px',
+              paddingLeft: '50px',
+              borderRadius: '12px', /* Updated to match widget style */
               border: '1px solid var(--border-color)',
               background: 'var(--bg-secondary)',
               color: 'var(--text-primary)',
               outline: 'none',
-              fontSize: '1rem'
+              fontSize: '1rem',
+              transition: 'all 0.2s'
             }}
           />
           <Search size={20} style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
@@ -75,28 +77,109 @@ const Header = ({ searchQuery, setSearchQuery }) => {
           </button>
 
             {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                {user.isAdmin && (
-                    <Link to="/admin" title="Admin Dashboard">
-                        <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
-                            <Package size={24} />
-                        </button>
-                    </Link>
-                )}
-                <Link to="/profile" style={{ textDecoration: 'none' }}>
-                    <span style={{ fontWeight: '600', color: 'var(--primary)' }}>Hi, {user.name}</span>
-                </Link>
+            <div style={{ position: 'relative' }}>
                 <button 
-                    onClick={logout}
-                    style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.9rem' }}
+                  onClick={() => document.getElementById('user-menu').classList.toggle('show')}
+                  style={{ 
+                    background: 'var(--primary)', 
+                    color: 'white', 
+                    width: '32px', 
+                    height: '32px', 
+                    borderRadius: '50%', 
+                    border: 'none', 
+                    cursor: 'pointer',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontWeight: 'bold'
+                  }}
                 >
-                    Logout
+                    {user.name.charAt(0).toUpperCase()}
                 </button>
+                
+                {/* User Dropdown Widget */}
+                <div 
+                    id="user-menu"
+                    className="glass-panel"
+                    style={{
+                        position: 'absolute',
+                        top: '120%',
+                        right: 0,
+                        width: '300px',
+                        padding: '1.5rem',
+                        display: 'none', // Toggled via class
+                        flexDirection: 'column',
+                        gap: '1rem',
+                        background: 'var(--bg-primary)',
+                        border: '1px solid var(--border-color)',
+                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                        zIndex: 100
+                    }}
+                >
+                     <style>{`
+                        #user-menu.show { display: flex !important; }
+                     `}</style>
+
+                    <div>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.25rem' }}>Account</h3>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{user.email}</p>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <Link to="/profile?tab=orders" style={{ textDecoration: 'none' }}>
+                            <button style={{ 
+                                width: '100%', padding: '12px', 
+                                background: 'var(--bg-secondary)', border: 'none', borderRadius: '12px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                cursor: 'pointer', color: 'var(--text-primary)', fontWeight: '500'
+                            }}>
+                                <Package size={18} /> Orders
+                            </button>
+                        </Link>
+                        <Link to="/profile" style={{ textDecoration: 'none' }}>
+                            <button style={{ 
+                                width: '100%', padding: '12px', 
+                                background: 'var(--bg-secondary)', border: 'none', borderRadius: '12px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                cursor: 'pointer', color: 'var(--text-primary)', fontWeight: '500'
+                            }}>
+                                <User size={18} /> Profile
+                            </button>
+                        </Link>
+                    </div>
+
+                    {user.isAdmin && (
+                         <Link to="/admin" style={{ textDecoration: 'none' }}>
+                            <button style={{ 
+                                width: '100%', padding: '12px', 
+                                background: 'var(--bg-secondary)', border: 'none', borderRadius: '12px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                                cursor: 'pointer', color: 'var(--text-primary)', fontWeight: '500'
+                            }}>
+                                <Package size={18} /> Admin Dashboard
+                            </button>
+                        </Link>
+                    )}
+
+                    <div style={{ borderTop: '1px solid var(--border-color)', margin: '0.5rem 0' }}></div>
+                    
+                    <button 
+                        onClick={logout}
+                        style={{ 
+                            background: 'none', border: 'none', 
+                            color: '#ef4444', cursor: 'pointer', 
+                            textAlign: 'left', padding: '0', fontWeight: '500'
+                        }}
+                    >
+                        Sign out
+                    </button>
+                </div>
             </div>
           ) : (
             <Link to="/login">
                 <button style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
                     <User size={24} />
+                    <span style={{ marginLeft: '8px', fontWeight: '500' }}>Sign In</span>
                 </button>
             </Link>
           )}

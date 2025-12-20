@@ -110,10 +110,70 @@ const AdminPage = () => {
         }
     };
 
+    const [selectedOrder, setSelectedOrder] = useState(null);
+
+    // ... (existing helper functions)
+
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <h1 style={{ marginBottom: '2rem' }}>Admin Dashboard</h1>
             
+            {/* Modal for Order Details */}
+            {selectedOrder && (
+                <div style={{ 
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+                    background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 
+                }}>
+                    <div className="glass-panel" style={{ background: 'var(--bg-primary)', padding: '2rem', maxWidth: '600px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.5rem' }}>Order Details</h2>
+                            <button onClick={() => setSelectedOrder(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: 'var(--text-primary)' }}>&times;</button>
+                        </div>
+                        
+                        <div style={{ display: 'grid', gap: '1.5rem' }}>
+                            <div style={{ padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Order Info</div>
+                                <p><b>ID:</b> #{selectedOrder._id}</p>
+                                <p><b>Date:</b> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                                <p><b>Status:</b> <span style={{ textTransform: 'capitalize' }}>{selectedOrder.status}</span></p>
+                                <p><b>Total:</b> {formatCurrency(selectedOrder.total)}</p>
+                            </div>
+
+                            <div style={{ padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
+                                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Customer & Shipping</div>
+                                <p><b>Customer Email:</b> {selectedOrder.email}</p>
+                                <div style={{ marginTop: '0.5rem' }}>
+                                    <p><b>Address:</b> {selectedOrder.shipping?.address}</p>
+                                    <p><b>City:</b> {selectedOrder.shipping?.city}</p>
+                                    <p><b>Postal:</b> {selectedOrder.shipping?.postalCode || 'N/A'}</p>
+                                    <p><b>Phone:</b> {selectedOrder.shipping?.phone}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Items ({selectedOrder.items?.length})</div>
+                                <div style={{ border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden' }}>
+                                    {selectedOrder.items?.map((item, idx) => (
+                                        <div key={idx} style={{ display: 'flex', padding: '10px', gap: '10px', borderBottom: '1px solid var(--border-color)', alignItems: 'center' }}>
+                                            <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontWeight: '500' }}>{item.name}</div>
+                                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>x{item.quantity}</div>
+                                            </div>
+                                            <div style={{ fontWeight: '500' }}>{formatCurrency(item.price * item.quantity)}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '2rem', textAlign: 'right' }}>
+                            <button className="btn-primary" onClick={() => setSelectedOrder(null)}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
                 <button 
                     onClick={() => setActiveTab('orders')}
@@ -184,7 +244,20 @@ const AdminPage = () => {
                                             {order.status}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '10px', display: 'flex', gap: '8px' }}>
+                                    <td style={{ padding: '10px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                        <button 
+                                            onClick={() => setSelectedOrder(order)}
+                                            style={{ 
+                                                padding: '5px 10px', 
+                                                background: 'var(--bg-secondary)', 
+                                                color: 'var(--text-primary)', 
+                                                border: '1px solid var(--border-color)', 
+                                                borderRadius: '4px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Details
+                                        </button>
                                         <select 
                                             value={order.status} 
                                             onChange={(e) => updateOrderStatus(order._id, e.target.value)}

@@ -78,16 +78,42 @@ body {
 .input-field {
   width: 100%;
   padding: 0.75rem;
-  background: var(--bg-primary);
+  background: var(--bg-primary); /* Will be dark in dark mode */
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 4px; /* More square like the image */
   color: var(--text-primary);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+
+[data-theme='dark'] .input-field {
+    background: #1f2937; /* Darker grey for inputs in dark mode */
+    border-color: #374151;
+}
+
 .input-field:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.btn-black {
+    background: #000;
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    width: 100%;
+    font-size: 1rem;
+}
+[data-theme='dark'] .btn-black {
+    background: #fff;
+    color: #000;
+}
+.btn-black:hover {
+    opacity: 0.9;
 }
 
 /* Layouts */

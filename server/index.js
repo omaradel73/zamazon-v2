@@ -468,10 +468,11 @@ app.post('/api/orders', async (req, res) => {
       });
       await order.save();
 
-      // Send Email
+      // Send Email to Customer
       if (transporter) {
           try {
-            const info = await transporter.sendMail({
+            // Customer Email
+            await transporter.sendMail({
                 from: '"Zamazon Store" <orders@zamazon.com>', 
                 to: email, 
                 subject: `Order Confirmation #${order._id}`, 
@@ -497,9 +498,29 @@ app.post('/api/orders', async (req, res) => {
                     </div>
                 `,
             });
-            console.log("Message sent: %s", info.messageId);
-            const previewUrl = nodemailer.getTestMessageUrl(info);
-            if (previewUrl) console.log("Preview URL: %s", previewUrl);
+
+            // Admin Notification
+            const admins = await User.find({ isAdmin: true });
+            for (const admin of admins) {
+                 await transporter.sendMail({
+                    from: '"Zamazon System" <system@zamazon.com>',
+                    to: admin.email,
+                    subject: `[New Order] #${order._id} - EGP ${total}`,
+                    text: `New order received from ${email}. Total: EGP ${total}.`,
+                    html: `
+                        <div style="font-family: Arial, sans-serif; padding: 20px;">
+                            <h2>New Order Received</h2>
+                            <p>Order <b>#${order._id}</b></p>
+                            <p><b>Customer:</b> ${email}</p>
+                            <p><b>Total:</b> EGP ${total}</p>
+                            <p><b>Items:</b> ${items.length}</p>
+                            <a href="http://localhost:5173/admin" style="display:inline-block; padding:10px 20px; background:#000; color:#fff; text-decoration:none; border-radius:5px;">View in Admin Panel</a>
+                        </div>
+                    `
+                 }).catch(err => console.error("Failed to email admin " + admin.email, err));
+            }
+            
+            console.log("Order confirmation emails sent.");
           } catch (error) {
             console.error("Error sending email:", error);
           }
