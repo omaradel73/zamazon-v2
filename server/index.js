@@ -381,6 +381,39 @@ app.put('/api/admin/users/:id/role', checkAdmin, async (req, res) => {
     }
 });
 
+app.post('/api/admin/users/promote', checkAdmin, async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+        
+        user.isAdmin = true;
+        await user.save();
+        res.json({ message: `User ${email} promoted to Admin`, user });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.put('/api/admin/orders/:id/status', checkAdmin, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
+        res.json(order);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+app.delete('/api/admin/orders/:id', checkAdmin, async (req, res) => {
+    try {
+        await Order.findByIdAndDelete(req.params.id);
+        res.json({ message: "Order deleted" });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Email Setup
 let transporter;
 const setupEmail = async () => {

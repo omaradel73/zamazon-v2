@@ -20,9 +20,11 @@ import VerifyPage from './pages/VerifyPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
 import WishlistPage from './pages/WishlistPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
+import AdminLayout from './components/AdminLayout';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,31 +54,39 @@ function App() {
                 
                 <main style={{ flex: 1, paddingBottom: '2rem' }}>
                   <Routes>
+                    {/* Public / Shop Routes */}
                     <Route path="/" element={
-                      <>
-                        {!searchQuery && <Hero scrollToProducts={scrollToProducts} />}
-                        <div ref={productsRef}>
-                          <ProductGrid searchQuery={searchQuery} />
-                        </div>
-                      </>
+                      <Routes>
+                        <Route path="/" element={<Hero scrollToProducts={scrollToProducts} />} />
+                        <Route path="/products" element={<ProductGrid productsRef={productsRef} searchQuery={searchQuery} />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route path="/verify-email" element={<VerifyPage />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                        <Route path="/reset-password" element={<ResetPasswordPage />} />
+                        <Route path="/cart" element={<CartPage />} />
+                    <Route path="/checkout" element={
+                        <ProtectedRoute>
+                            <CheckoutPage />
+                        </ProtectedRoute>
                     } />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/verify" element={<VerifyPage />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                    <Route path="/reset-password" element={<ResetPasswordPage />} />
-                    <Route path="/cart" element={<CartPage />} />
                     <Route path="/wishlist" element={<WishlistPage />} />
-                    <Route path="/profile" element={
-                      <ProtectedRoute>
-                        <ProfilePage />
-                      </ProtectedRoute>
+                        <Route path="/profile" element={
+                          <ProtectedRoute>
+                            <ProfilePage />
+                          </ProtectedRoute>
+                        } />
+                      </Routes>
                     } />
-                    <Route path="/admin" element={
+
+                    {/* Admin Routes - Separated Layout */}
+                    <Route path="/admin/*" element={
                       <ProtectedRoute adminOnly>
-                        <AdminPage />
+                        <AdminLayout />
                       </ProtectedRoute>
-                    } />
+                    }>
+                       <Route index element={<AdminPage />} />
+                    </Route>
                   </Routes>
                 </main>
                 <BottomNav />

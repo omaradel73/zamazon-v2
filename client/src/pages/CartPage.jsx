@@ -115,70 +115,29 @@ const CartPage = () => {
               </div>
             ))}
 
-            {/* Shipping Form */}
-            <div className="glass-panel" style={{ padding: '1.5rem' }}>
-                <h3 style={{ marginBottom: '1rem' }}>Shipping Details</h3>
-                <div style={{ display: 'grid', gap: '1rem' }}>
-                    <input 
-                        type="text" 
-                        placeholder="Address (Street, Building)" 
-                        className="input-field"
-                        style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
-                        value={shipping.address}
-                        onChange={e => setShipping({...shipping, address: e.target.value})}
-                    />
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <select 
-                            style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
-                            value={shipping.city}
-                            onChange={e => setShipping({...shipping, city: e.target.value})}
-                        >
-                            <option value="Cairo">Cairo</option>
-                            <option value="Giza">Giza</option>
-                            <option value="Alexandria">Alexandria</option>
-                        </select>
-                        <input 
-                            type="text" 
-                            placeholder="Phone Number" 
-                            className="input-field"
-                            style={{ padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
-                            value={shipping.phone}
-                            onChange={e => setShipping({...shipping, phone: e.target.value})}
-                        />
-                    </div>
-                </div>
-            </div>
-          </div>
+            {/* Cart Summary */}
+            <div className="glass-panel" style={{ padding: '1.5rem', height: 'fit-content' }}>
+              <h3 style={{ marginBottom: '1rem' }}>Order Summary</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '1rem' }}>
+                <span>Subtotal</span>
+                <span>{formatCurrency(totalPrice)}</span>
+              </div>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>Shipping and taxes calculated at checkout.</p>
+              
+              <div style={{ borderTop: '1px solid var(--border-color)', margin: '1rem 0' }}></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                <span>Estimated Total</span>
+                <span>{formatCurrency(totalPrice)}</span>
+              </div>
 
-          {/* Checkout Box */}
-          <div className="glass-panel" style={{ padding: '1.5rem', height: 'fit-content' }}>
-            <h3 style={{ marginBottom: '1rem' }}>Order Summary</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '1rem' }}>
-              <span>Subtotal</span>
-              <span>{formatCurrency(totalPrice)}</span>
+              <button 
+                className="btn-primary" 
+                style={{ width: '100%' }}
+                onClick={() => navigate('/checkout')}
+              >
+                Proceed to Checkout
+              </button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '1rem' }}>
-              <span>Shipping</span>
-              <span>{formatCurrency(shippingCost)}</span>
-            </div>
-            <div style={{ borderTop: '1px solid var(--border-color)', margin: '1rem 0' }}></div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '1.2rem', fontWeight: 'bold' }}>
-              <span>Total</span>
-              <span>{formatCurrency(finalTotal)}</span>
-            </div>
-
-            <div style={{ marginBottom: '1rem', padding: '10px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '8px', color: '#10b981', fontSize: '0.9rem' }}>
-                Est. Delivery: <b>{formattedDate}</b>
-            </div>
-
-            <button 
-              className="btn-primary" 
-              style={{ width: '100%', opacity: loading ? 0.7 : 1 }}
-              onClick={handleCheckout}
-              disabled={loading}
-            >
-              {loading ? 'Processing...' : 'Checkout Now'}
-            </button>
           </div>
         </div>
       )}
