@@ -6,13 +6,11 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { NotificationProvider } from './context/NotificationContext';
 
-import Header from './components/Header';
-import Hero from './components/Hero';
-import ProductGrid from './components/ProductGrid';
-import BottomNav from './components/BottomNav';
-import Loading from './components/Loading';
 import NotificationBanner from './components/NotificationBanner';
 import ProtectedRoute from './components/ProtectedRoute';
+import Loading from './components/Loading';
+import ShopLayout from './components/ShopLayout';
+import HomePage from './pages/HomePage';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -30,12 +28,6 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   
-  const productsRef = React.useRef(null);
-
-  const scrollToProducts = () => {
-    productsRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
     setTimeout(() => setLoading(false), 2000);
   }, []);
@@ -48,60 +40,40 @@ function App() {
         <CartProvider>
           <ThemeProvider>
             <NotificationProvider>
-              <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-                <NotificationBanner />
-                <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-                
-                <main style={{ flex: 1, paddingBottom: '2rem' }}>
-                  <Routes>
-                    {/* Public / Shop Routes */}
-                    <Route path="/" element={
-                      <Routes>
-                        <Route path="/" element={<Hero scrollToProducts={scrollToProducts} />} />
-                        <Route path="/products" element={<ProductGrid productsRef={productsRef} searchQuery={searchQuery} />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                        <Route path="/verify-email" element={<VerifyPage />} />
-                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                        <Route path="/reset-password" element={<ResetPasswordPage />} />
-                        <Route path="/cart" element={<CartPage />} />
+              <NotificationBanner />
+              <Routes>
+                {/* Public / Shop Routes */}
+                <Route element={<ShopLayout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}>
+                    <Route path="/" element={<HomePage searchQuery={searchQuery} />} />
+                    <Route path="/products" element={<HomePage searchQuery={searchQuery} />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/verify-email" element={<VerifyPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password" element={<ResetPasswordPage />} />
+                    <Route path="/cart" element={<CartPage />} />
                     <Route path="/checkout" element={
                         <ProtectedRoute>
                             <CheckoutPage />
                         </ProtectedRoute>
                     } />
                     <Route path="/wishlist" element={<WishlistPage />} />
-                        <Route path="/profile" element={
-                          <ProtectedRoute>
-                            <ProfilePage />
-                          </ProtectedRoute>
-                        } />
-                      </Routes>
-                    } />
-
-                    {/* Admin Routes - Separated Layout */}
-                    <Route path="/admin/*" element={
-                      <ProtectedRoute adminOnly>
-                        <AdminLayout />
+                    <Route path="/profile" element={
+                      <ProtectedRoute>
+                        <ProfilePage />
                       </ProtectedRoute>
-                    }>
-                       <Route index element={<AdminPage />} />
-                    </Route>
-                  </Routes>
-                </main>
-                <BottomNav />
-                
-                <footer style={{ 
-                  padding: '2rem', 
-                  textAlign: 'center', 
-                  background: 'var(--bg-secondary)',
-                  borderTop: '1px solid var(--border-color)',
-                  marginTop: 'auto',
-                  marginBottom: '60px' // Space for BottomNav on mobile
-                }}>
-                  <p>&copy; 2025 Zamazon. All rights reserved.</p>
-                </footer>
-              </div>
+                    } />
+                </Route>
+
+                {/* Admin Routes - Separated Layout */}
+                <Route path="/admin/*" element={
+                  <ProtectedRoute adminOnly>
+                    <AdminLayout />
+                  </ProtectedRoute>
+                }>
+                   <Route index element={<AdminPage />} />
+                </Route>
+              </Routes>
             </NotificationProvider>
           </ThemeProvider>
         </CartProvider>
