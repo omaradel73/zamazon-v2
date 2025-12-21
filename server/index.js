@@ -379,7 +379,7 @@ const checkAdmin = async (req, res, next) => {
 
 app.get('/api/admin/orders', checkAdmin, async (req, res) => {
     try {
-        const orders = await Order.find().sort({ createdAt: -1 });
+        const orders = await Order.find().populate('userId', 'name email').sort({ createdAt: -1 });
         res.json(orders);
     } catch (err) {
         res.status(500).json({ message: err.message });

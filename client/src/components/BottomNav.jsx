@@ -1,5 +1,4 @@
-import React from 'react';
-import { Home, ShoppingCart, User, Menu } from 'lucide-react';
+import { Home, ShoppingCart, User, LayoutDashboard } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -14,9 +13,12 @@ const BottomNav = () => {
     const navItems = [
         { icon: <Home size={24} />, label: 'Home', path: '/' },
         { icon: <User size={24} />, label: 'Profile', path: user ? '/profile' : '/login' },
-        { icon: <ShoppingCart size={24} />, label: 'Cart', path: '/cart', badge: totalItems },
-        { icon: <Menu size={24} />, label: 'Menu', path: user?.isAdmin ? '/admin' : '/profile' }
+        { icon: <ShoppingCart size={24} />, label: 'Cart', path: '/cart', badge: totalItems }
     ];
+
+    if (user?.isAdmin) {
+        navItems.push({ icon: <LayoutDashboard size={24} />, label: 'Admin', path: '/admin' });
+    }
 
     return (
         <div className="bottom-nav">

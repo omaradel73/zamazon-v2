@@ -12,10 +12,10 @@ const AdminPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const [editingProduct, setEditingProduct] = useState(null); // Product being edited
+    const [editingProduct, setEditingProduct] = useState(null);
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-
     const [promoteEmail, setPromoteEmail] = useState('');
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
         if (!user || (!user.isAdmin && user.email !== 'omaradel73@gmail.com')) {
@@ -160,27 +160,11 @@ const AdminPage = () => {
             alert("Failed to delete");
         }
     };
-        if (!confirm("Are you sure you want to delete this order?")) return;
-        try {
-            await fetch(`/api/admin/orders/${orderId}`, {
-                method: 'DELETE',
-                headers: { 'x-admin-email': user.email }
-            });
-            fetchData();
-        } catch (err) {
-            alert("Failed to delete order");
-        }
-    };
-
-    const [selectedOrder, setSelectedOrder] = useState(null);
-
-    // ... (existing helper functions)
 
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <h1 style={{ marginBottom: '2rem' }}>Admin Dashboard</h1>
             
-            {/* Modal for Order Details */}
             {selectedOrder && (
                 <div style={{ 
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
@@ -228,11 +212,10 @@ const AdminPage = () => {
                                 </div>
                             </div>
                         </div>
-
+                    </div>
                 </div>
             )}
 
-            {/* Tabs */}
             <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
                 {['orders', 'users', 'products'].map(tab => (
                     <button 
@@ -262,6 +245,7 @@ const AdminPage = () => {
                         <thead>
                             <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                                 <th style={{ padding: '10px' }}>Order ID</th>
+                                <th style={{ padding: '10px' }}>Date</th>
                                 <th style={{ padding: '10px' }}>User</th>
                                 <th style={{ padding: '10px' }}>Total</th>
                                 <th style={{ padding: '10px' }}>Status</th>
@@ -270,42 +254,51 @@ const AdminPage = () => {
                         </thead>
                         <tbody>
                             {orders.map(order => (
-                                <tr key={order._id}>
+                                <tr 
+                                    key={order._id} 
+                                    onClick={() => setSelectedOrder(order)}
+                                    style={{ cursor: 'pointer', transition: 'background-color 0.2s' }}
+                                    className="order-row"
+                                >
                                     <td data-label="Order ID" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>{order._id}</td>
-                                    <td data-label="User" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>{order.user?.name || order.user?.email || 'Guest'}</td>
+                                    <td data-label="Date" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>{new Date(order.createdAt).toLocaleDateString()}</td>
+                                    <td data-label="User" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
+                                        {order.userId?.name || order.user?.name || order.email || 'Guest'}
+                                    </td>
                                     <td data-label="Total" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>{formatCurrency(order.total || 0)}</td>
-                                    <td data-label="Paid" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
+                                    <td data-label="Status" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
                                         <span style={{ 
                                             padding: '4px 8px', 
                                             borderRadius: '4px', 
-                                            background: order.isPaid ? '#dcfce7' : '#fee2e2', 
-                                            color: order.isPaid ? '#166534' : '#991b1b',
-                                            fontSize: '0.85rem'
+                                            background: order.status === 'delivered' ? '#dcfce7' : order.status === 'declined' ? '#fee2e2' : '#ffedd5', 
+                                            color: order.status === 'delivered' ? '#166534' : order.status === 'declined' ? '#991b1b' : '#9a3412',
+                                            fontSize: '0.85rem',
+                                            textTransform: 'capitalize'
                                         }}>
-                                            {order.isPaid ? 'Paid' : 'Pending'}
+                                            {order.status || 'Pending'}
                                         </span>
                                     </td>
-                                    <td data-label="Delivered" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-                                        <span style={{ 
-                                            padding: '4px 8px', 
-                                            borderRadius: '4px', 
-                                            background: order.isDelivered ? '#dcfce7' : '#fee2e2', 
-                                            color: order.isDelivered ? '#166534' : '#991b1b',
-                                            fontSize: '0.85rem'
-                                        }}>
-                                            {order.isDelivered ? 'Delivered' : 'Pending'}
-                                        </span>
-                                    </td>
-                                    <td data-label="Actions" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
+                                    <td data-label="Actions" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                                         <button 
-                                            onClick={() => updateOrderStatus(order._id, 'Delivered')}
-                                            style={{ marginRight: '0.5rem', padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer' }}
-                                            disabled={order.isDelivered}
+                                            onClick={(e) => { e.stopPropagation(); setSelectedOrder(order); }}
+                                            style={{ padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px' }}
                                         >
-                                            Mark Delivered
+                                            Details
                                         </button>
+                                        
+                                        <select 
+                                            value={order.status || 'pending'} 
+                                            onClick={(e) => e.stopPropagation()}
+                                            onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                                            style={{ padding: '4px', borderRadius: '4px', border: '1px solid var(--border-color)', fontSize: '0.8rem' }}
+                                        >
+                                            <option value="pending">Pending</option>
+                                            <option value="delivered">Delivered</option>
+                                            <option value="declined">Declined</option>
+                                        </select>
+
                                         <button 
-                                            onClick={() => deleteOrder(order._id)}
+                                            onClick={(e) => { e.stopPropagation(); deleteOrder(order._id); }}
                                             style={{ padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '4px' }}
                                         >
                                             Delete
@@ -360,7 +353,6 @@ const AdminPage = () => {
                             </tbody>
                          </table>
                          
-                         {/* Product Modal */}
                          {isProductModalOpen && (
                             <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
                                 <div style={{ background: 'var(--bg-secondary)', padding: '2rem', borderRadius: '12px', width: '90%', maxWidth: '500px' }}>

@@ -143,6 +143,10 @@ body {
   animation: fadeIn 0.4s ease-out;
 }
 
+.cart-summary {
+    padding: 2rem;
+}
+
 /* Hero Styles */
 .hero-title {
     font-size: 5rem;
@@ -205,38 +209,37 @@ body {
     
     .admin-sidebar { display: none !important; }
 
+    /* Global Container Adjustment for "Fit" */
+    .container {
+        padding: 0 12px !important; 
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden; /* Force hide overflow */
+    }
+    
+    .cart-summary {
+        width: 100%;
+        padding: 1rem !important;
+        box-sizing: border-box;
+        margin-top: 1rem;
+    }
+
     /* Cart Overhaul for Mobile */
     .cart-item { 
+        display: flex;
         flex-direction: column; 
         align-items: stretch !important; 
-        gap: 0.5rem !important; /* Tighter gap */
+        gap: 0.5rem !important; 
         background: var(--bg-primary);
         border: 1px solid var(--border-color) !important;
         border-radius: 12px;
-        padding: 0.75rem !important; /* Tighter padding ("Zoomed out feel") */
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        width: 100%;
-    }
-    .cart-item img { 
-        width: 100% !important; 
-        height: 180px !important; /* Slightly smaller image */
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-        object-fit: contain !important;
-        background: #f9fafb;
+        padding: 0.75rem !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Lighter shadow */
+        width: auto !important; /* Allow it to fit container */
+        margin-bottom: 1rem;
+        max-width: 100%;
     }
 
-    /* Mobile Page Heights */
-    .cart-layout, .checkout-layout {
-        min-height: 60vh; 
-        padding-bottom: 4rem;
-    }
-    
-    /* Global Container Adjustment for "Fit" */
-    .container {
-        padding: 0 0.5rem !important; /* Maximize width usage */
-    }
-    
     /* --- Admin Dashboard Mobile Polish --- */
     .mobile-admin-header { display: flex !important; }
     

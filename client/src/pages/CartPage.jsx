@@ -26,7 +26,7 @@ const CartPage = () => {
         {/* Cart Items List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {cart.map(item => (
-              <div key={item.id} className="cart-item" style={{ display: 'flex', gap: '2rem', alignItems: 'start', paddingBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
+              <div key={item._id} className="cart-item" style={{ display: 'flex', gap: '2rem', alignItems: 'start', paddingBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
                 <img src={item.image} alt={item.name} style={{ width: '120px', height: '150px', objectFit: 'cover' }} />
                 
                 <div style={{ flex: 1, display: 'flex', justifyContent: 'space-between' }}>
@@ -40,18 +40,18 @@ const CartPage = () => {
                          {/* Quantity Control */}
                         <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border-color)', height: '40px' }}>
                             <button 
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() => updateQuantity(item._id, item.quantity - 1)}
                                 style={{ background: 'none', border: 'none', padding: '0 15px', cursor: 'pointer', color: 'var(--text-primary)', height: '100%', fontSize: '1.2rem' }}
                             >−</button>
                             <span style={{ minWidth: '30px', textAlign: 'center' }}>{item.quantity}</span>
                             <button 
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() => updateQuantity(item._id, item.quantity + 1)}
                                 style={{ background: 'none', border: 'none', padding: '0 15px', cursor: 'pointer', color: 'var(--text-primary)', height: '100%', fontSize: '1.2rem' }}
                             >+</button>
                         </div>
                         
                         <button 
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => removeFromCart(item._id)}
                             style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}
                         >
                             <Trash2 size={18} />
@@ -67,7 +67,7 @@ const CartPage = () => {
         </div>
 
         {/* Summary Card */}
-        <div style={{ background: 'var(--bg-secondary)', padding: '2rem', borderRadius: '4px' }}>
+        <div className="cart-summary" style={{ background: 'var(--bg-secondary)', borderRadius: '4px' }}>
             {/* Discount section removed */}
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
