@@ -38,7 +38,10 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // --- MongoDB Connection ---
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('MongoDB Connected'))
+  .then(() => {
+      console.log('MongoDB Connected');
+      seedProducts().catch(err => console.error('Seeding Error:', err));
+  })
   .catch(err => console.error('MongoDB Connection Error:', err));
 
 // --- Schemas & Models ---
@@ -201,7 +204,7 @@ const seedProducts = async () => {
         console.log("Seeded Products");
     }
 };
-seedProducts();
+
 
 // --- Auth Whitelist ---
 // Emails that automatically get Admin access
