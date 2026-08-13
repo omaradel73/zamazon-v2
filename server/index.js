@@ -2,14 +2,39 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
+const { OAuth2Client } = require('google-auth-library');
 require('dotenv').config();
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/zamazon';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/naqsha';
+
+// Multer Setup
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)){
+    fs.mkdirSync(uploadDir);
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+})
+const upload = multer({ storage: storage });
 
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // --- MongoDB Connection ---
 mongoose.connect(MONGO_URI)
@@ -23,7 +48,9 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     isAdmin: { type: Boolean, default: false },
     address: String,
+    region: String,
     city: String,
+    postalCode: String, // Added Postal Code
     phone: String,
     isVerified: { type: Boolean, default: false },
     verificationCode: String,
@@ -34,6 +61,7 @@ const userSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema({
     name: String,
     price: Number,
+    originalPrice: Number,
     description: String,
     image: String,
     rating: Number
@@ -50,17 +78,27 @@ const orderSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+const feedbackSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    name: String,
+    rating: Number,
+    comment: String,
+    status: { type: String, default: 'pending' }, // pending, approved, rejected
+    createdAt: { type: Date, default: Date.now }
+});
+
 const User = mongoose.model('User', userSchema);
 const Product = mongoose.model('Product', productSchema);
 const Order = mongoose.model('Order', orderSchema);
+const Feedback = mongoose.model('Feedback', feedbackSchema);
 
 // ... (Seed Data remains same)
 
 // --- Profile Routes ---
 app.put('/api/users/profile', async (req, res) => {
-    const { userId, name, address, city, phone, password } = req.body;
+    const { userId, name, address, region, city, postalCode, phone, password } = req.body;
     try {
-        const updateData = { name, address, city, phone };
+        const updateData = { name, address, region, city, postalCode, phone };
         if (password && password.trim() !== "") {
             updateData.password = password; // In prod use bcrypt hash!
         }
@@ -68,7 +106,17 @@ app.put('/api/users/profile', async (req, res) => {
         const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
         res.json({ 
             message: "Profile updated", 
-            user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin, address: user.address, city: user.city, phone: user.phone } 
+            user: { 
+                id: user._id, 
+                name: user.name, 
+                email: user.email, 
+                isAdmin: user.isAdmin, 
+                address: user.address, 
+                region: user.region, 
+                city: user.city, 
+                postalCode: user.postalCode,
+                phone: user.phone 
+            } 
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -87,18 +135,34 @@ app.get('/api/orders/myorders', async (req, res) => {
 
 // --- Seed Data (Products) ---
 const seedProducts = async () => {
+    // Ensure Ramadan Package exists and is updated
+    await Product.findOneAndUpdate(
+        { name: "الباكدچ الرمضاني 🌙" },
+        {
+            name: "الباكدچ الرمضاني 🌙",
+            price: 259,
+            originalPrice: 350,
+            rating: 5.0,
+            image: "/uploads/ramadan-package.jpg",
+            description: "بوجي وطمطم، وفنانيس، وعم شكشك، وبكار. (Ramadan Package)"
+        },
+        { upsert: true, new: true }
+    );
+    console.log("Seeded/Updated Ramadan Package");
+
     const count = await Product.countDocuments();
     if (count === 0) {
         const products = [
+            
             {
-                name: "Zamazon Echo Dot",
+                name: "Naqsha Echo Dot",
                 price: 2500,
                 rating: 4.5,
                 image: "https://images.unsplash.com/photo-1543512214-318c77a07298?auto=format&fit=crop&q=80&w=400",
                 description: "Voice controlled smart speaker with Alexa."
             },
             {
-                name: "Zamazon Kindle Paperwhite",
+                name: "Naqsha Kindle Paperwhite",
                 price: 7000,
                 rating: 4.8,
                 image: "https://images.unsplash.com/photo-1592434134753-a70baf7979d5?auto=format&fit=crop&q=80&w=400",
@@ -143,13 +207,22 @@ seedProducts();
 // Emails that automatically get Admin access
 const ADMIN_EMAILS = [
     'omaradel73@gmail.com',
-    'admin@zamazon.com'
+    'admin@naqsha.com'
 ];
 
 // --- Routes ---
 
 app.get('/', (req, res) => {
-  res.send('Zamazon API is running with MongoDB');
+  res.send('Naqsha API is running with MongoDB');
+});
+
+// Upload Route
+app.post('/api/upload', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({ imageUrl });
 });
 
 // Products
@@ -234,7 +307,7 @@ app.post('/api/register', async (req, res) => {
         // Send Verification Email
         if (transporter) {
             transporter.sendMail({
-                from: '"Zamazon Security" <security@zamazon.com>',
+                from: '"Naqsha Security" <security@naqsha.com>',
                 to: email,
                 subject: "Verify your email",
                 text: `Your verification code is: ${verificationCode}`
@@ -284,7 +357,7 @@ app.post('/api/resend-code', async (req, res) => {
 
         if (transporter) {
              transporter.sendMail({
-                from: '"Zamazon Security" <security@zamazon.com>',
+                from: '"Naqsha Security" <security@naqsha.com>',
                 to: email,
                 subject: "Verify your email (Resend)",
                 text: `Your new verification code is: ${verificationCode}`
@@ -310,7 +383,7 @@ app.post('/api/forgot-password', async (req, res) => {
 
         if (transporter) {
             transporter.sendMail({
-                from: '"Zamazon Security" <security@zamazon.com>',
+                from: '"Naqsha Security" <security@naqsha.com>',
                 to: email,
                 subject: "Reset Password",
                 text: `Your password reset code is: ${resetCode}`
@@ -358,6 +431,45 @@ app.post('/api/login', async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
+    }
+});
+
+app.post('/api/auth/google', async (req, res) => {
+    const { token } = req.body;
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID 
+        });
+        const { name, email, picture } = ticket.getPayload();
+
+        let user = await User.findOne({ email });
+        
+        if (!user) {
+            // Create new user
+            const verificationCode = generateCode();
+            user = new User({
+                name,
+                email,
+                password: Math.random().toString(36).slice(-8), // Random pw
+                isAdmin: ADMIN_EMAILS.includes(email),
+                isVerified: true, // Google emails are verified
+                verificationCode
+            });
+            await user.save();
+        } else if (!user.isVerified) {
+             // If user existed but wasn't verified, verify them now since they logged in with Google
+             user.isVerified = true;
+             await user.save();
+        }
+
+        res.json({ 
+            message: "Google Login successful", 
+            user: { id: user._id, name: user.name, email: user.email, isAdmin: user.isAdmin, isVerified: user.isVerified } 
+        });
+    } catch (err) {
+        console.error("Google Auth Error:", err);
+        res.status(401).json({ message: "Invalid Google Token" });
     }
 });
 
@@ -472,6 +584,27 @@ const setupEmail = async () => {
 };
 setupEmail();
 
+// Get User by ID (For Session Verification)
+app.get('/api/users/:id', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.json({ 
+            id: user._id, 
+            name: user.name, 
+            email: user.email, 
+            isAdmin: user.isAdmin,
+            address: user.address,
+            region: user.region,
+            city: user.city,
+            postalCode: user.postalCode,
+            phone: user.phone
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 // Orders
 app.post('/api/orders', async (req, res) => {
   const { userId, email, items, total, shipping, deliveryDate } = req.body;
@@ -497,7 +630,7 @@ app.post('/api/orders', async (req, res) => {
           try {
             // Customer Email
             await transporter.sendMail({
-                from: '"Zamazon Store" <orders@zamazon.com>', 
+                from: '"Naqsha Store" <orders@naqsha.com>', 
                 to: email, 
                 subject: `Order Confirmation #${order._id}`, 
                 text: `Thank you for your order! Total: $${total}. Shipping to: ${shipping.address}`, 
@@ -527,7 +660,7 @@ app.post('/api/orders', async (req, res) => {
             const admins = await User.find({ isAdmin: true });
             for (const admin of admins) {
                  await transporter.sendMail({
-                    from: '"Zamazon System" <system@zamazon.com>',
+                    from: '"Naqsha System" <system@naqsha.com>',
                     to: admin.email,
                     subject: `[New Order] #${order._id} - EGP ${total}`,
                     text: `New order received from ${email}. Total: EGP ${total}.`,
@@ -555,6 +688,67 @@ app.post('/api/orders', async (req, res) => {
   } catch (err) {
       res.status(500).json({ message: err.message });
   }
+});
+
+
+// --- Feedback Routes ---
+
+// Submit Feedback
+app.post('/api/feedback', async (req, res) => {
+    try {
+        const { userId, name, rating, comment } = req.body;
+        const feedback = new Feedback({ userId, name, rating, comment });
+        await feedback.save();
+        res.status(201).json({ message: "Feedback submitted for review" });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to submit feedback" });
+    }
+});
+
+// Get Public Feedback (Approved only)
+app.get('/api/feedback', async (req, res) => {
+    try {
+        const feedback = await Feedback.find({ status: 'approved' }).sort({ createdAt: -1 }).limit(10);
+        res.json(feedback);
+    } catch (err) {
+        res.status(500).json({ message: "Failed to fetch feedback" });
+    }
+});
+
+// Admin: Get All Feedback
+app.get('/api/admin/feedback', async (req, res) => {
+    try {
+        const feedback = await Feedback.find().sort({ createdAt: -1 });
+        res.json(feedback);
+    } catch (err) {
+        res.status(500).json({ message: "Failed to fetch feedback" });
+    }
+});
+
+// Admin: Update Feedback Status
+app.put('/api/admin/feedback/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        await Feedback.findByIdAndUpdate(req.params.id, { status });
+        res.json({ message: "Status updated" });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to update status" });
+    }
+});
+
+// Admin: Delete Feedback
+app.delete('/api/admin/feedback/:id', async (req, res) => {
+    try {
+        await Feedback.findByIdAndDelete(req.params.id);
+        res.json({ message: "Feedback deleted" });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to delete feedback" });
+    }
+});
+
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 app.listen(PORT, () => {

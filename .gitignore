@@ -4,3 +4,8 @@ dist/
 .DS_Store
 coverage/
 .vscode/
+*.tar
+*.tar.gz
+*.zip
+*.pem
+server/uploads/

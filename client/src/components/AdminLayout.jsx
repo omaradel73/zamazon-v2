@@ -3,6 +3,8 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LayoutDashboard, Users, ShoppingBag, LogOut, Home } from 'lucide-react';
 
+import logo from '../assets/naqsha-logo.jpg';
+
 const AdminLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -33,7 +35,7 @@ const AdminLayout = () => {
             }}>
                 <div style={{ marginBottom: '3rem', paddingLeft: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                        <img src="/logo.png" alt="Zamazon" style={{ height: '32px' }} />
+                        <img src={logo} alt="Naqsha" style={{ height: '32px', borderRadius: '8px' }} />
                         <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Admin</span>
                     </div>
                 </div>

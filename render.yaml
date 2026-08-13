@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: naqsha
+    env: node
+    buildCommand: "npm install --prefix server && npm install --prefix client && npm run build --prefix client"
+    startCommand: "npm start --prefix server"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false

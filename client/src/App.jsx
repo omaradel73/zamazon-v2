@@ -3,7 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
-import { WishlistProvider } from './context/WishlistContext';
+import { LanguageProvider } from './context/LanguageContext';
+
 import { NotificationProvider } from './context/NotificationContext';
 
 import NotificationBanner from './components/NotificationBanner';
@@ -20,15 +21,16 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
-import WishlistPage from './pages/WishlistPage';
+
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import AdminLayout from './components/AdminLayout';
+import WhatsAppButton from './components/WhatsAppButton';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     setTimeout(() => setLoading(false), 2000);
   }, []);
@@ -37,38 +39,39 @@ function App() {
 
   return (
     <AuthProvider>
-      <WishlistProvider>
+      <LanguageProvider>
         <CartProvider>
           <ThemeProvider>
             <NotificationProvider>
               <NotificationBanner />
+              <WhatsAppButton />
               <Routes>
                 {/* Public / Shop Routes */}
                 <Route element={<ShopLayout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />}>
-                    <Route path="/" element={<HomePage searchQuery={searchQuery} />} />
-                    <Route path="/products" element={<HomePage searchQuery={searchQuery} />} />
-                    
-                    {/* Public Routes (Redirect if logged in) */}
-                    <Route element={<PublicRoute />}>
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                    </Route>
+                  <Route path="/" element={<HomePage searchQuery={searchQuery} />} />
+                  <Route path="/products" element={<HomePage searchQuery={searchQuery} />} />
 
-                    <Route path="/verify-email" element={<VerifyPage />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                    <Route path="/reset-password" element={<ResetPasswordPage />} />
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/checkout" element={
-                        <ProtectedRoute>
-                            <CheckoutPage />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/wishlist" element={<WishlistPage />} />
-                    <Route path="/profile" element={
-                      <ProtectedRoute>
-                        <ProfilePage />
-                      </ProtectedRoute>
-                    } />
+                  {/* Public Routes (Redirect if logged in) */}
+                  <Route element={<PublicRoute />}>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                  </Route>
+
+                  <Route path="/verify-email" element={<VerifyPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password" element={<ResetPasswordPage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route path="/checkout" element={
+                    <ProtectedRoute>
+                      <CheckoutPage />
+                    </ProtectedRoute>
+                  } />
+
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  } />
                 </Route>
 
                 {/* Admin Routes - Separated Layout */}
@@ -77,13 +80,13 @@ function App() {
                     <AdminLayout />
                   </ProtectedRoute>
                 }>
-                   <Route index element={<AdminPage />} />
+                  <Route index element={<AdminPage />} />
                 </Route>
               </Routes>
             </NotificationProvider>
           </ThemeProvider>
         </CartProvider>
-      </WishlistProvider>
+      </LanguageProvider>
     </AuthProvider>
   );
 }

@@ -6,16 +6,40 @@ services:
       - "5000:5000"
     environment:
       - PORT=5000
-      - MONGO_URI=mongodb+srv://spicy7577_db_user:EX1bfRWurn1pIs6K@zamazon.ywgygek.mongodb.net/zamazon?retryWrites=true&w=majority&appName=zamazon
+      - MONGO_URI=mongodb+srv://spicy7577_db_user:EX1bfRWurn1pIs6K@zamazon.ywgygek.mongodb.net/naqsha?retryWrites=true&w=majority&appName=naqsha
       - SMTP_HOST=smtp.gmail.com
       - SMTP_USER=spicy7577@gmail.com
       - SMTP_PASS=irtjxsmczpplloni
+      - GOOGLE_CLIENT_ID=367305409057-scckm3ombvie02emu4u69p095dhuf344.apps.googleusercontent.com
+    volumes:
+      - uploads-data:/app/uploads
     restart: always
 
   client:
     build: ./client
-    ports:
-      - "80:5173"
+    # Ports removed, traffic comes via https-portal
+    # ports:
+    #   - "80:5173"
+    expose:
+      - "5173"
     depends_on:
       - server
     restart: always
+
+  https-portal:
+    image: steveltn/https-portal:1
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAINS: 'naqsha.ddns.net -> http://client:5173'
+      STAGE: 'production' # Force production certificates
+    volumes:
+      - https-portal-data:/var/lib/https-portal
+    restart: always
+    depends_on:
+      - client
+
+volumes:
+  https-portal-data:
+  uploads-data:

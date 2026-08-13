@@ -2,22 +2,25 @@ import { Home, ShoppingCart, User, LayoutDashboard } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const BottomNav = () => {
     const location = useLocation();
     const { totalItems } = useCart();
     const { user } = useAuth();
 
+    const { t } = useLanguage();
+
     const isActive = (path) => location.pathname === path;
 
     const navItems = [
-        { icon: <Home size={24} />, label: 'Home', path: '/' },
-        { icon: <User size={24} />, label: 'Profile', path: user ? '/profile' : '/login' },
-        { icon: <ShoppingCart size={24} />, label: 'Cart', path: '/cart', badge: totalItems }
+        { icon: <Home size={24} />, label: t('home'), path: '/' },
+        { icon: <User size={24} />, label: t('profile'), path: user ? '/profile' : '/login' },
+        { icon: <ShoppingCart size={24} />, label: t('cart'), path: '/cart', badge: totalItems }
     ];
 
     if (user?.isAdmin) {
-        navItems.push({ icon: <LayoutDashboard size={24} />, label: 'Admin', path: '/admin' });
+        navItems.push({ icon: <LayoutDashboard size={24} />, label: t('admin'), path: '/admin' });
     }
 
     return (
@@ -77,9 +80,9 @@ const BottomNav = () => {
                 `}
             </style>
             {navItems.map((item, index) => (
-                <Link 
-                    key={index} 
-                    to={item.path} 
+                <Link
+                    key={index}
+                    to={item.path}
                     className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
                 >
                     <div style={{ position: 'relative' }}>

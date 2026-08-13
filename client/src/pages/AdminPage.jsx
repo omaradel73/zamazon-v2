@@ -10,12 +10,42 @@ const AdminPage = () => {
     const [orders, setOrders] = useState([]);
     const [users, setUsers] = useState([]);
     const [products, setProducts] = useState([]);
+    const [feedback, setFeedback] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const [editingProduct, setEditingProduct] = useState(null);
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [promoteEmail, setPromoteEmail] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
+
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        setUploading(true);
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setPreviewImage(data.imageUrl);
+            } else {
+                alert('Upload failed: ' + data.message || 'Unknown error');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Upload error');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     useEffect(() => {
         if (!user || (!user.isAdmin && user.email !== 'omaradel73@gmail.com')) {
@@ -29,18 +59,24 @@ const AdminPage = () => {
         try {
             const headers = { 'x-admin-email': user.email };
             
+            let res, data;
+
             if (activeTab === 'orders') {
-                const res = await fetch('/api/admin/orders', { headers });
-                const data = await res.json();
+                res = await fetch('/api/admin/orders', { headers });
+                data = await res.json();
                 setOrders(Array.isArray(data) ? data : []);
             } else if (activeTab === 'users') {
-                const res = await fetch('/api/admin/users', { headers });
-                const data = await res.json();
+                res = await fetch('/api/admin/users', { headers });
+                data = await res.json();
                 setUsers(Array.isArray(data) ? data : []);
             } else if (activeTab === 'products') {
-                const res = await fetch('/api/products');
-                const data = await res.json();
+                res = await fetch('/api/products');
+                data = await res.json();
                 setProducts(Array.isArray(data) ? data : []);
+            } else if (activeTab === 'feedback') {
+                res = await fetch('/api/admin/feedback', { headers });
+                data = await res.json();
+                setFeedback(Array.isArray(data) ? data : []);
             }
         } catch (error) {
             console.error("Failed to fetch admin data", error);
@@ -125,7 +161,7 @@ const AdminPage = () => {
             name: form.name.value,
             price: form.price.value,
             description: form.description.value,
-            image: form.image.value
+            image: previewImage || form.imageUrl.value // Use uploaded image or text URL
         };
 
         try {
@@ -144,6 +180,7 @@ const AdminPage = () => {
             }
             setIsProductModalOpen(false);
             setEditingProduct(null);
+            setPreviewImage('');
             fetchData();
         } catch (err) {
             console.error(err);
@@ -158,6 +195,35 @@ const AdminPage = () => {
             fetchData();
         } catch (err) {
             alert("Failed to delete");
+        }
+    };
+
+    const updateFeedbackStatus = async (id, status) => {
+        try {
+            await fetch(`/api/admin/feedback/${id}/status`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-admin-email': user.email
+                },
+                body: JSON.stringify({ status })
+            });
+            fetchData();
+        } catch (err) {
+            alert("Failed to update status");
+        }
+    };
+
+    const deleteFeedback = async (id) => {
+        if (!window.confirm("Delete this feedback?")) return;
+        try {
+            await fetch(`/api/admin/feedback/${id}`, {
+                method: 'DELETE',
+                headers: { 'x-admin-email': user.email }
+            });
+            fetchData();
+        } catch (err) {
+            alert("Failed to delete feedback");
         }
     };
 
@@ -217,7 +283,7 @@ const AdminPage = () => {
             )}
 
             <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
-                {['orders', 'users', 'products'].map(tab => (
+                {['orders', 'users', 'products', 'feedback'].map(tab => (
                     <button 
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -313,7 +379,7 @@ const AdminPage = () => {
                          <button 
                             className="btn-primary" 
                             style={{ marginBottom: '1.5rem', padding: '0.5rem 1rem' }}
-                            onClick={() => { setEditingProduct(null); setIsProductModalOpen(true); }}
+                            onClick={() => { setEditingProduct(null); setPreviewImage(''); setIsProductModalOpen(true); }}
                          >
                             + Add Product
                          </button>
@@ -336,7 +402,7 @@ const AdminPage = () => {
                                         <td data-label="Price" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>{formatCurrency(p.price)}</td>
                                         <td data-label="Actions" style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
                                             <button 
-                                                onClick={() => { setEditingProduct(p); setIsProductModalOpen(true); }} 
+                                                onClick={() => { setEditingProduct(p); setPreviewImage(p.image); setIsProductModalOpen(true); }} 
                                                 style={{ marginRight: '0.5rem', padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer' }}
                                             >
                                                 Edit
@@ -361,9 +427,24 @@ const AdminPage = () => {
                                         <input className="input-field" name="name" placeholder="Name" defaultValue={editingProduct?.name} required />
                                         <input className="input-field" name="price" type="number" placeholder="Price" defaultValue={editingProduct?.price} required />
                                         <textarea className="input-field" name="description" placeholder="Description" defaultValue={editingProduct?.description} />
-                                        <input className="input-field" name="image" placeholder="Image URL" defaultValue={editingProduct?.image} />
+                                        
+                                        {/* Image Upload */}
+                                        <div style={{ padding: '1rem', border: '1px dashed var(--border-color)', borderRadius: '8px' }}>
+                                            <input type="file" onChange={handleImageUpload} accept="image/*" style={{ marginBottom: '0.5rem' }} />
+                                            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>OR use URL</div>
+                                            <input className="input-field" name="imageUrl" placeholder="Image URL (optional)" defaultValue={editingProduct?.image} />
+                                            
+                                            {(previewImage || editingProduct?.image) && (
+                                                <div style={{ marginTop: '1rem' }}>
+                                                    <img src={previewImage || editingProduct.image} alt="Preview" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }} />
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                                            <button type="submit" className="btn-primary" style={{ flex: 1, padding: '0.75rem' }}>Save</button>
+                                            <button type="submit" disabled={uploading} className="btn-primary" style={{ flex: 1, padding: '0.75rem', opacity: uploading ? 0.7 : 1 }}>
+                                                {uploading ? 'Uploading...' : 'Save'}
+                                            </button>
                                             <button type="button" onClick={() => setIsProductModalOpen(false)} style={{ flex: 1, padding: '0.75rem', border: '1px solid var(--border-color)', background: 'transparent', cursor: 'pointer' }}>Cancel</button>
                                         </div>
                                     </form>
@@ -371,6 +452,63 @@ const AdminPage = () => {
                             </div>
                          )}
                     </div>
+                ) : activeTab === 'feedback' ? (
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                        <thead>
+                            <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                <th style={{ padding: '10px' }}>User</th>
+                                <th style={{ padding: '10px' }}>Rating</th>
+                                <th style={{ padding: '10px' }}>Comment</th>
+                                <th style={{ padding: '10px' }}>Status</th>
+                                <th style={{ padding: '10px' }}>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {feedback.map(f => (
+                                <tr key={f._id}>
+                                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>{f.name}</td>
+                                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>{f.rating}/5</td>
+                                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>{f.comment}</td>
+                                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)' }}>
+                                        <span style={{ 
+                                            padding: '4px 8px', 
+                                            borderRadius: '4px', 
+                                            background: f.status === 'approved' ? '#dcfce7' : f.status === 'rejected' ? '#fee2e2' : '#ffedd5',
+                                            color: f.status === 'approved' ? '#166534' : f.status === 'rejected' ? '#991b1b' : '#9a3412',
+                                            fontSize: '0.85rem',
+                                            textTransform: 'capitalize'
+                                        }}>
+                                            {f.status}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem' }}>
+                                        {f.status !== 'approved' && (
+                                            <button 
+                                                onClick={() => updateFeedbackStatus(f._id, 'approved')}
+                                                style={{ padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer', background: '#dcfce7', color: '#166534', border: 'none', borderRadius: '4px' }}
+                                            >
+                                                Approve
+                                            </button>
+                                        )}
+                                        {f.status !== 'rejected' && (
+                                            <button 
+                                                onClick={() => updateFeedbackStatus(f._id, 'rejected')}
+                                                style={{ padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer', background: '#fee2e2', color: '#991b1b', border: 'none', borderRadius: '4px' }}
+                                            >
+                                                 Reject
+                                            </button>
+                                        )}
+                                        <button 
+                                            onClick={() => deleteFeedback(f._id)}
+                                            style={{ padding: '4px 8px', fontSize: '0.8rem', cursor: 'pointer', background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '4px' }}
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 ) : (
                     <div>
                         <div style={{ marginBottom: '2rem', padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px' }}>
