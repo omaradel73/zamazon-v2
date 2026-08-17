@@ -472,7 +472,7 @@ app.post('/api/auth/google', async (req, res) => {
         });
     } catch (err) {
         console.error("Google Auth Error:", err);
-        res.status(401).json({ message: "Invalid Google Token" });
+        res.status(401).json({ message: "Invalid Google Token: " + err.message });
     }
 });
 
