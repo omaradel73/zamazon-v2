@@ -628,62 +628,57 @@ app.post('/api/orders', async (req, res) => {
       });
       await order.save();
 
-      // Send Email to Customer
+      // Send Email to Customer (Async)
       if (transporter) {
-          try {
-            // Customer Email
-            transporter.sendMail({
-                from: '"Naqsha Store" <orders@naqsha.com>', 
-                to: email, 
-                subject: `Order Confirmation #${order._id}`, 
-                text: `Thank you for your order! Total: $${total}. Shipping to: ${shipping.address}`, 
-                html: `
-                    <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
-                        <div style="background: white; padding: 20px; border-radius: 10px;">
-                            <h1 style="color: #6d28d9;">Thank you for your order!</h1>
-                            <p>Your order <b>#${order._id}</b> is confirmed.</p>
-                            
-                            <div style="background: #f9fafb; padding: 15px; margin: 15px 0; border-radius: 8px;">
-                                <h3>Shipping Details</h3>
-                                <p><b>Address:</b> ${shipping.address}, ${shipping.city}</p>
-                                <p><b>Phone:</b> ${shipping.phone}</p>
-                                <p><b>Estimated Delivery:</b> ${deliveryDate}</p>
-                            </div>
+          // Customer Email
+          transporter.sendMail({
+              from: '"Naqsha Store" <orders@naqsha.com>', 
+              to: email, 
+              subject: `Order Confirmation #${order._id}`, 
+              text: `Thank you for your order! Total: $${total}. Shipping to: ${shipping.address}`, 
+              html: `
+                  <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
+                      <div style="background: white; padding: 20px; border-radius: 10px;">
+                          <h1 style="color: #6d28d9;">Thank you for your order!</h1>
+                          <p>Your order <b>#${order._id}</b> is confirmed.</p>
+                          
+                          <div style="background: #f9fafb; padding: 15px; margin: 15px 0; border-radius: 8px;">
+                              <h3>Shipping Details</h3>
+                              <p><b>Address:</b> ${shipping.address}, ${shipping.city}</p>
+                              <p><b>Phone:</b> ${shipping.phone}</p>
+                              <p><b>Estimated Delivery:</b> ${deliveryDate}</p>
+                          </div>
 
-                            <h3>Total: EGP ${total}</h3>
-                            <ul>
-                                ${items.map(item => `<li>${item.name} - EGP ${item.price} x ${item.quantity}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                `,
-            }).catch(error => console.error("Error sending customer email:", error));
+                          <h3>Total: EGP ${total}</h3>
+                          <ul>
+                              ${items.map(item => `<li>${item.name} - EGP ${item.price} x ${item.quantity}</li>`).join('')}
+                          </ul>
+                      </div>
+                  </div>
+              `,
+          }).catch(err => console.error("Error sending customer email:", err));
 
-            // Admin Notification
-            const admins = await User.find({ isAdmin: true });
-            for (const admin of admins) {
-                 transporter.sendMail({
-                    from: '"Naqsha System" <system@naqsha.com>',
-                    to: admin.email,
-                    subject: `[New Order] #${order._id} - EGP ${total}`,
-                    text: `New order received from ${email}. Total: EGP ${total}.`,
-                    html: `
-                        <div style="font-family: Arial, sans-serif; padding: 20px;">
-                            <h2>New Order Received</h2>
-                            <p>Order <b>#${order._id}</b></p>
-                            <p><b>Customer:</b> ${email}</p>
-                            <p><b>Total:</b> EGP ${total}</p>
-                            <p><b>Items:</b> ${items.length}</p>
-                            <a href="http://localhost:5173/admin" style="display:inline-block; padding:10px 20px; background:#000; color:#fff; text-decoration:none; border-radius:5px;">View in Admin Panel</a>
-                        </div>
-                    `
-                 }).catch(err => console.error("Failed to email admin " + admin.email, err));
-            }
-            
-            console.log("Order confirmation emails sent.");
-          } catch (error) {
-            console.error("Error sending email:", error);
-          }
+          // Admin Notification
+          User.find({ isAdmin: true }).then(admins => {
+              for (const admin of admins) {
+                   transporter.sendMail({
+                      from: '"Naqsha System" <system@naqsha.com>',
+                      to: admin.email,
+                      subject: `[New Order] #${order._id} - EGP ${total}`,
+                      text: `New order received from ${email}. Total: EGP ${total}.`,
+                      html: `
+                          <div style="font-family: Arial, sans-serif; padding: 20px;">
+                              <h2>New Order Received</h2>
+                              <p>Order <b>#${order._id}</b></p>
+                              <p><b>Customer:</b> ${email}</p>
+                              <p><b>Total:</b> EGP ${total}</p>
+                              <p><b>Items:</b> ${items.length}</p>
+                              <a href="http://localhost:5173/admin" style="display:inline-block; padding:10px 20px; background:#000; color:#fff; text-decoration:none; border-radius:5px;">View in Admin Panel</a>
+                          </div>
+                      `
+                   }).catch(err => console.error("Failed to email admin " + admin.email, err));
+              }
+          }).catch(err => console.error("Failed to fetch admins for email", err));
       }
 
       res.status(201).json({ message: "Order placed successfully", orderId: order._id });
