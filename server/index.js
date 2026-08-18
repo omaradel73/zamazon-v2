@@ -652,7 +652,7 @@ app.post('/api/orders', async (req, res) => {
 
                             <h3>Total: EGP ${total}</h3>
                             <ul>
-                                \${items.map(item => `<li>\${item.name} - EGP \${item.price} x \${item.quantity}</li>`).join('')}
+                                ${items.map(item => `<li>${item.name} - EGP ${item.price} x ${item.quantity}</li>`).join('')}
                             </ul>
                         </div>
                     </div>
