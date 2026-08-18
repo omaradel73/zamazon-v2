@@ -632,7 +632,7 @@ app.post('/api/orders', async (req, res) => {
       if (transporter) {
           try {
             // Customer Email
-            await transporter.sendMail({
+            transporter.sendMail({
                 from: '"Naqsha Store" <orders@naqsha.com>', 
                 to: email, 
                 subject: `Order Confirmation #${order._id}`, 
@@ -652,17 +652,17 @@ app.post('/api/orders', async (req, res) => {
 
                             <h3>Total: EGP ${total}</h3>
                             <ul>
-                                ${items.map(item => `<li>${item.name} - EGP ${item.price} x ${item.quantity}</li>`).join('')}
+                                \${items.map(item => `<li>\${item.name} - EGP \${item.price} x \${item.quantity}</li>`).join('')}
                             </ul>
                         </div>
                     </div>
                 `,
-            });
+            }).catch(error => console.error("Error sending customer email:", error));
 
             // Admin Notification
             const admins = await User.find({ isAdmin: true });
             for (const admin of admins) {
-                 await transporter.sendMail({
+                 transporter.sendMail({
                     from: '"Naqsha System" <system@naqsha.com>',
                     to: admin.email,
                     subject: `[New Order] #${order._id} - EGP ${total}`,
